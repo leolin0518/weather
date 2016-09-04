@@ -24,7 +24,7 @@ Widget::Widget(QWidget *parent) :
      /*设置发送数据*/
      manage = new QNetworkAccessManager(this);
      manage_cityInfo = new QNetworkAccessManager(this);
-     QString cityName = "上海";
+     QString cityName = "北京";
      QString provName = "北京";
      qDebug() << "init cityName:" << cityName;
 
@@ -53,9 +53,6 @@ void Widget::init()
 void Widget::ui_init()//界面初始化
 {
     ui->dangqian_wendu_label->clear();
-    ui->city_comboBox_1->hide();
-    ui->city_comboBox_2->hide();
-    ui->city_comboBox_3->hide();
 
     ui->city_comboBox_p->hide();
     ui->city_comboBox_c->hide();
@@ -158,11 +155,6 @@ void Widget::getForecastWeatherInfo(QJsonObject data)
 
     qDebug() << "forecastInfo_wenduMax:" << forecastInfo_wenduMax;//forecastInfo_wenduMax: ("34℃", "33℃", "31℃", "31℃")
 
-//    chart *p_chart = new chart();
-//    QStringList chartList;
-//    chartList << tr("未来几天温度") << "0,4" << "" << f
-//    p_chart->splineChart();
-
     QStringList set_chart_string;
     set_chart_string << "" << "" << "" << forecastInfo_wenduMax ;
     qDebug() << "set_chart_string:" << set_chart_string;
@@ -183,8 +175,6 @@ void Widget::getOtherInfo(QJsonObject data)
     details = otherInfo.value("details").toString();
     name = otherInfo.value("name").toString();
     qDebug() << "details:" << details;
-    //ui->ganmaozhishu_label_3->setText(name);
-    //ui->ganmaozhishu_label_4->setText(index);
 
     otherInfo = otherArray.at(1).toObject();//防晒指数
     index = otherInfo.value("index").toString();
@@ -228,7 +218,6 @@ void Widget::getOtherInfo(QJsonObject data)
 
 void Widget::refreshWeather(QString str)
 {
-    //QString cityName = ui->cBox_city->currentText();
 
     setNetworkRequest(network_request, str);
     manage->get(network_request);
@@ -254,7 +243,6 @@ void Widget::getCityList(QJsonObject data)
 {
      QStringList cityInfoList;
      cityInfoList.clear();
-     //ui->city_comboBox_c->clear();
      QJsonArray cityinfo = data.value("retData").toArray();
      int size = cityinfo.size();
      qDebug() << "cityinfo.......................size;" << size;
@@ -422,7 +410,7 @@ void Widget::splineChart(QStringList valueList)
     QLineSeries *series  = new QLineSeries();
 
     series->setName(valueList.at(0));//设置标题内容
-   // series->setPen(QPen(Qt::blue,1,Qt::SolidLine));
+    //series->setPen(QPen(Qt::blue,1,Qt::SolidLine));
 
     for(int i=3; i < valueList.size(); i++)
     {
@@ -462,7 +450,7 @@ void Widget::splineChart(QStringList valueList)
     axisX->setTitleText(""); //设置X轴的标题
     axisX->setGridLineVisible(true); //设置是否显示网格线
     //axisX->setMinorTickCount(4); //设置小刻度线的数目
-    // axisX->setLabelsVisible(false); //设置刻度是否显示
+    //axisX->setLabelsVisible(false); //设置刻度是否显示
 
     QValueAxis *axisY = new QValueAxis;
     axisY->setRange(y_min - 1 , y_max + 1);
@@ -543,39 +531,26 @@ void Widget::on_comboBox_currentIndexChanged(const QString &arg1)
 //显示City选项
 void Widget::on_showSetting_pushButton_clicked()
 {
-    //ui->showSetting_pushButton->hide();
-    ui->city_comboBox_1->hide();
-    ui->city_comboBox_2->hide();
-    ui->city_comboBox_3->hide();
+
     ui->save_pushButton->show();
     ui->showSetting_pushButton->hide();
 
     ui->city_comboBox_p->show();
     ui->city_comboBox_c->show();
     ui->city_comboBox_a->show();
-
-
 }
-
-
-
 
 
 void Widget::on_save_pushButton_clicked()
 {
-   // refreshWeather(ui->city_comboBox_2->currentText());
     refreshWeather(ui->city_comboBox_a->currentText());
-    ui->city_comboBox_1->hide();
-    ui->city_comboBox_2->hide();
-    ui->city_comboBox_3->hide();
-    ui->save_pushButton->hide();
 
+    ui->save_pushButton->hide();
     ui->city_comboBox_p->hide();
     ui->city_comboBox_c->hide();
     ui->city_comboBox_a->hide();
 
     ui->showSetting_pushButton->show();
-
     ui->currCity_label->setText(todayInfo.currCity);
 }
 

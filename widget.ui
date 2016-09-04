@@ -457,27 +457,6 @@
     </property>
    </widget>
   </widget>
-  <widget class="QWidget" name="layoutWidget">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>450</y>
-     <width>221</width>
-     <height>22</height>
-    </rect>
-   </property>
-   <layout class="QHBoxLayout" name="horizontalLayout">
-    <item>
-     <widget class="QComboBox" name="city_comboBox_3"/>
-    </item>
-    <item>
-     <widget class="QComboBox" name="city_comboBox_1"/>
-    </item>
-    <item>
-     <widget class="QComboBox" name="city_comboBox_2"/>
-    </item>
-   </layout>
-  </widget>
   <widget class="QChartView" name="chart_widget" native="true">
    <property name="geometry">
     <rect>
@@ -488,7 +467,7 @@
     </rect>
    </property>
   </widget>
-  <widget class="QWidget" name="">
+  <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
      <x>90</x>
