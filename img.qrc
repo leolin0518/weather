@@ -1,0 +1,14 @@
+<RCC>
+    <qresource prefix="/">
+        <file>img/ico/setting.ico</file>
+        <file>img/ico/setting.png</file>
+        <file>img/ico/leizhenyu.png</file>
+        <file>img/ico/duoyun.png</file>
+        <file>img/ico/qingduoyun.png</file>
+        <file>img/ico/undefined.png</file>
+        <file>img/ico/xiaoyu.png</file>
+        <file>img/ico/dayun.png</file>
+        <file>img/ico/qing.png</file>
+        <file>img/ico/yin.png</file>
+    </qresource>
+</RCC>
