@@ -85,7 +85,9 @@ public:
     QStringList provinceList;               //省份列表
     QStringList cityList;                   //城市列表
     QStringList areaList;                   //区域列表
-    QStringList forecastInfo_wenduMax;                   //城市列表
+    QStringList forecastInfo_wenduMax;
+    QStringList forecastInfo_wenduMin;
+    QStringList forecasetInfo_date;
 };
 
 #endif // WIDGET_H

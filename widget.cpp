@@ -133,6 +133,7 @@ void Widget::getForecastWeatherInfo(QJsonObject data)
                            forecastInfo.hightemp + "," + forecastInfo.lowtemp + "," + forecastInfo.fengli + "," + forecastInfo.fengxiang +"," + forecastInfo.aqi;
         qDebug() << "foreInfo:" << foreInfo;//"2016-09-03,星期六,多云,多云,34℃,25℃,微风级,东风,"
         forecastInfoList << foreInfo;
+        forecasetInfo_date << forecastInfo.date;
 
         qDebug() << "forecastInfoList:" << forecastInfoList;
 
@@ -148,18 +149,26 @@ void Widget::getForecastWeatherInfo(QJsonObject data)
         //QString i_str = QString::number(dd,10);
        // qDebug() << "ddd: " << ddd;
         QString wendu_max =QString::number(i,10) + "," + tmp.section(',', 4, 4).mid(0,2);//34℃ 最高温度
-        qDebug() << "wendu_max: " << wendu_max;
+        QString wendu_min =QString::number(i,10) + "," + tmp.section(',', 5, 5).mid(0,2);//14℃ 最低温度
+        qDebug() << "wendu_max: " << wendu_max << "wendu_min:" << wendu_min;
        // wendu_max =  i + "," + wendu_max;
         forecastInfo_wenduMax << wendu_max;
+        forecastInfo_wenduMin << wendu_min;
     }
 
     qDebug() << "forecastInfo_wenduMax:" << forecastInfo_wenduMax;//forecastInfo_wenduMax: ("34℃", "33℃", "31℃", "31℃")
+    qDebug() << "forecastInfo_wenduMin:" << forecastInfo_wenduMin;
 
     QStringList set_chart_string;
-    set_chart_string << "" << "" << "" << forecastInfo_wenduMax ;
+    set_chart_string << "Max:" << "" << "" << forecastInfo_wenduMax ;
     qDebug() << "set_chart_string:" << set_chart_string;
 
+    QStringList set_chart_string_wendu_min;
+    set_chart_string_wendu_min << "Min" << "" << "" << forecastInfo_wenduMin ;
+    qDebug() << "set_chart_string_wendu_min:" << set_chart_string_wendu_min;
+
     splineChart(set_chart_string);
+    //splineChart(set_chart_string_wendu_min);
     set_chart_string.clear();
     forecastInfo_wenduMax.clear();
 
@@ -407,12 +416,13 @@ void Widget::splineChart(QStringList valueList)
 {
     int x_max = 0, x_min = 100, y_max = 0, y_min = 100;
     qDebug() << "valueList:" << valueList << valueList.size();
-    QLineSeries *series  = new QLineSeries();
+    //QLineSeries *series  = new QLineSeries();//折线
+    QSplineSeries *series = new QSplineSeries();//曲线
 
     series->setName(valueList.at(0));//设置标题内容
-    //series->setPen(QPen(Qt::blue,1,Qt::SolidLine));
+    //series->setPen(QPen(Qt::blue,1,Qt::SolidLine));//设置曲线颜色宽度
 
-    for(int i=3; i < valueList.size(); i++)
+    for(int i=3; i < valueList.size(); i++)//曲线上添加点坐标
     {
       QString tmp = valueList.at(i);
       qDebug() << tmp;
@@ -425,43 +435,78 @@ void Widget::splineChart(QStringList valueList)
       qDebug() << "int: " << value_p << "," << value_l;
       series->append(value_p, value_l);
     }
-    qDebug() << "x_max: " << x_max << ",x_min" << x_min;
-    qDebug() << "y_max: " << y_max << ",y_min" << y_min;
+    qDebug() << "x_max: " << x_max << ",x_min" << x_min;//x轴上对应的点的最大值和最小值
+    qDebug() << "y_max: " << y_max << ",y_min" << y_min;//y轴上对应的点的最大值和最小值
 
-    QChart *chart = new QChart();
-    if(valueList.at(0) != "")
+
+
+    QCategoryAxis *axisX = new QCategoryAxis();
+    //QCategoryAxis *axisY = new QCategoryAxis();
+
+    //自定义XY轴上显示的label的颜色 Customize axis label colors
+    QBrush axisBrush(Qt::black);
+    axisX->setLabelsBrush(axisBrush);
+    //axisY->setLabelsBrush(axisBrush);
+
+    if(!forecasetInfo_date.isEmpty())
     {
-      chart->legend()->show();//标题
+        for(int j = 0; j < forecasetInfo_date.size(); j++)
+        {
+            axisX->append(forecasetInfo_date.at(j), j+1);//axisX->append("a", 1);
+        }
+        qDebug() << "xxxxxxxxxxxxxxxxxxx" << forecasetInfo_date.size();
+        axisX->setRange(0, 4);
     }
-    else
-    {
-      chart->legend()->hide();//标题
-    }
+
+//    axisX->append("a", 1);
+//    axisX->append("b", 2);
+//    axisX->append("c", 3);
+//    axisX->append("d", 4);
+//    axisX->setRange(0, 4);
+
+/*
+    axisY->append("slow", 10);
+    axisY->append("med", 20);
+    axisY->append("fast", 30);
+    axisY->setRange(0, 30);
+*/
 
 
-    chart->addSeries(series);//把曲线添加到chart上
-    chart->setTitle(tr("未来四天温度走势图"));
-    chart->setAnimationOptions(QChart::SeriesAnimations);//设置曲线呈动画显示
 
-    //chart->createDefaultAxes();//创建曲线的轴 默认值
-    QValueAxis *axisX = new QValueAxis; //定义X轴
-    axisX->setRange(0 , 3);
-    axisX->setLabelFormat("%g"); //设置刻度的格式
-    axisX->setTitleText(""); //设置X轴的标题
-    axisX->setGridLineVisible(true); //设置是否显示网格线
+
+    //QValueAxis *axisX = new QValueAxis; //定义X轴
+    QValueAxis *axisY = new QValueAxis;
+
+    //axisX->setRange(0 , 3);
+    //axisX->setLabelFormat("%g"); //设置刻度的格式
+    //axisX->setTitleText(""); //设置X轴的标题
+    //axisX->setGridLineVisible(true); //设置是否显示网格线
     //axisX->setMinorTickCount(4); //设置小刻度线的数目
     //axisX->setLabelsVisible(false); //设置刻度是否显示
 
-    QValueAxis *axisY = new QValueAxis;
     axisY->setRange(y_min - 1 , y_max + 1);
     axisY->setTitleText("");
     axisY->setLabelFormat("%d");
-    axisY->setGridLineVisible(true);
-   // axisY->setGridLineVisible(false);
+    //axisY->setGridLineVisible(true);//设置刻度是否显示
 
+
+    QChart *chart = new QChart();
+    chart->addSeries(series);//把曲线添加到chart上
+    chart->setTitle(tr("未来四天温度走势图"));
+    chart->setAnimationOptions(QChart::SeriesAnimations);//设置曲线呈动画显示
+    //chart->createDefaultAxes();//创建曲线的轴 默认值
     chart->setAxisX(axisX, series);
     chart->setAxisY(axisY, series);
-    //chart->legend()->hide();
+
+    if(valueList.at(0) != "")//valueList的第一个字符内容，如果内容为空则隐藏legend，否则显示字符内容为标题
+    {
+      chart->legend()->show();
+    }
+    else
+    {
+      chart->legend()->hide();
+    }
+
 
 //    QString axisX_str = valueList.at(1);//设置X轴的范围
 //    if(axisX_str != "")
@@ -484,6 +529,7 @@ void Widget::splineChart(QStringList valueList)
 
     ui->chart_widget->setRenderHint(QPainter::Antialiasing);//防止曲线出现“锯齿”现象
     ui->chart_widget->setChart(chart);
+
 }
 
 
