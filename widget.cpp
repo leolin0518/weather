@@ -140,7 +140,7 @@ void Widget::getForecastWeatherInfo(QJsonObject data)
     }
 
 
-    for(int i=0; i < forecastInfoList.size(); i++)
+    for(int i=0, j=1; i < forecastInfoList.size(); i++)
     {
         QString tmp = forecastInfoList.at(i);
         qDebug() << tmp;
@@ -148,8 +148,9 @@ void Widget::getForecastWeatherInfo(QJsonObject data)
        // QString ddd = dd.mid(0,2);//mid()函数接受两个参数，第一个是起始位置，第二个是取串的长度。34℃ -> 34
         //QString i_str = QString::number(dd,10);
        // qDebug() << "ddd: " << ddd;
-        QString wendu_max =QString::number(i,10) + "," + tmp.section(',', 4, 4).mid(0,2);//34℃ 最高温度
-        QString wendu_min =QString::number(i,10) + "," + tmp.section(',', 5, 5).mid(0,2);//14℃ 最低温度
+        QString wendu_max =QString::number(j,10) + "," + tmp.section(',', 4, 4).mid(0,2);//34℃ 最高温度
+        QString wendu_min =QString::number(j,10) + "," + tmp.section(',', 5, 5).mid(0,2);//14℃ 最低温度
+        j = j + 2;
         qDebug() << "wendu_max: " << wendu_max << "wendu_min:" << wendu_min;
        // wendu_max =  i + "," + wendu_max;
         forecastInfo_wenduMax << wendu_max;
@@ -160,19 +161,22 @@ void Widget::getForecastWeatherInfo(QJsonObject data)
     qDebug() << "forecastInfo_wenduMin:" << forecastInfo_wenduMin;
 
     QStringList set_chart_string;
-    set_chart_string << "Max:" << "" << "" << forecastInfo_wenduMax ;
+    set_chart_string << "Max:" << "" << "" << forecastInfo_wenduMax ;//("Min", "", "", "0,20", "1,20", "2,20", "3,18")
     qDebug() << "set_chart_string:" << set_chart_string;
 
     QStringList set_chart_string_wendu_min;
     set_chart_string_wendu_min << "Min" << "" << "" << forecastInfo_wenduMin ;
     qDebug() << "set_chart_string_wendu_min:" << set_chart_string_wendu_min;
 
-    splineChart(set_chart_string);
+    splineChart(set_chart_string, set_chart_string_wendu_min);
     //splineChart(set_chart_string_wendu_min);
     set_chart_string.clear();
     forecastInfo_wenduMax.clear();
 
 }
+
+
+
 
 void Widget::getOtherInfo(QJsonObject data)
 {
@@ -412,19 +416,23 @@ void Widget::setUI_information()//设置界面显示信息，如当前温度，�
         //设置天气img end
 }
 
-void Widget::splineChart(QStringList valueList)
+void Widget::splineChart(QStringList maxList, QStringList minList)
 {
     int x_max = 0, x_min = 100, y_max = 0, y_min = 100;
-    qDebug() << "valueList:" << valueList << valueList.size();
-    //QLineSeries *series  = new QLineSeries();//折线
-    QSplineSeries *series = new QSplineSeries();//曲线
+    qDebug() << "maxList:" << maxList << maxList.size();
+    qDebug() << "minList:" << minList << minList.size();
 
-    series->setName(valueList.at(0));//设置标题内容
-    //series->setPen(QPen(Qt::blue,1,Qt::SolidLine));//设置曲线颜色宽度
+    QSplineSeries *seriesMax = new QSplineSeries();//曲线 //new QLineSeries();//折线
+    QSplineSeries *seriesMin = new QSplineSeries();//曲线
 
-    for(int i=3; i < valueList.size(); i++)//曲线上添加点坐标
+    seriesMax->setName(maxList.at(0));//设置曲线Max的标题内容
+    seriesMin->setName(minList.at(0));//设置曲线Min的标题内容
+    seriesMax->setPen(QPen(Qt::red,2,Qt::SolidLine));//设置曲线颜色宽度
+    seriesMin->setPen(QPen(Qt::blue,2,Qt::SolidLine));
+
+    for(int i=3; i < maxList.size(); i++)//Max曲线上添加点坐标
     {
-      QString tmp = valueList.at(i);
+      QString tmp = maxList.at(i);
       qDebug() << tmp;
       int value_p = tmp.section(',', 0, 0).toInt();//"5,8" int:  5
       int value_l = tmp.section(',', 1, 1).toInt();//"5,8" int:  8
@@ -432,73 +440,80 @@ void Widget::splineChart(QStringList valueList)
       x_min = qMin(x_min, value_p);
       y_max = qMax(y_max, value_l);
       y_min = qMin(y_min, value_l);
-      qDebug() << "int: " << value_p << "," << value_l;
-      series->append(value_p, value_l);
+      qDebug() << "Max->int: " << value_p << "," << value_l;
+      seriesMax->append(value_p, value_l);
     }
+
+
+    for(int i=3; i < minList.size(); i++)//Min曲线上添加点坐标
+    {
+      QString tmp = minList.at(i);
+      qDebug() << tmp;
+      int value_p = tmp.section(',', 0, 0).toInt();//"5,8" int:  5
+      int value_l = tmp.section(',', 1, 1).toInt();//"5,8" int:  8
+      x_max = qMax(x_max, value_p);
+      x_min = qMin(x_min, value_p);
+      y_max = qMax(y_max, value_l);
+      y_min = qMin(y_min, value_l);
+      qDebug() << "Min->int: " << value_p << "," << value_l;
+      seriesMin->append(value_p, value_l);
+    }
+
+
     qDebug() << "x_max: " << x_max << ",x_min" << x_min;//x轴上对应的点的最大值和最小值
     qDebug() << "y_max: " << y_max << ",y_min" << y_min;//y轴上对应的点的最大值和最小值
 
 
 
     QCategoryAxis *axisX = new QCategoryAxis();
-    //QCategoryAxis *axisY = new QCategoryAxis();
+    QValueAxis *axisY = new QValueAxis;//http://blog.csdn.net/linbounconstraint/article/details/52440807
 
     //自定义XY轴上显示的label的颜色 Customize axis label colors
-    QBrush axisBrush(Qt::black);
-    axisX->setLabelsBrush(axisBrush);
+    //QBrush axisBrush(Qt::black);
+    //axisX->setLabelsBrush(axisBrush);
     //axisY->setLabelsBrush(axisBrush);
-
-    if(!forecasetInfo_date.isEmpty())
-    {
-        for(int j = 0; j < forecasetInfo_date.size(); j++)
-        {
-            axisX->append(forecasetInfo_date.at(j), j+1);//axisX->append("a", 1);
-        }
-        qDebug() << "xxxxxxxxxxxxxxxxxxx" << forecasetInfo_date.size();
-        axisX->setRange(0, 4);
-    }
-
-//    axisX->append("a", 1);
-//    axisX->append("b", 2);
-//    axisX->append("c", 3);
-//    axisX->append("d", 4);
-//    axisX->setRange(0, 4);
-
-/*
-    axisY->append("slow", 10);
-    axisY->append("med", 20);
-    axisY->append("fast", 30);
-    axisY->setRange(0, 30);
-*/
-
-
-
-
-    //QValueAxis *axisX = new QValueAxis; //定义X轴
-    QValueAxis *axisY = new QValueAxis;
-
-    //axisX->setRange(0 , 3);
     //axisX->setLabelFormat("%g"); //设置刻度的格式
     //axisX->setTitleText(""); //设置X轴的标题
     //axisX->setGridLineVisible(true); //设置是否显示网格线
     //axisX->setMinorTickCount(4); //设置小刻度线的数目
     //axisX->setLabelsVisible(false); //设置刻度是否显示
 
+    /*
+        设置X轴上label的显示内容和范围
+        ("a", 2), 	("b", 4), 	("c", 6),	("d", 8),
+        Pairt(1,20) Pairt(3,20) Pairt(5,20) Pairt(7,20)
+        //    axisX->append("a", 1);
+    */
+    if(!forecasetInfo_date.isEmpty())
+    {
+        for(int j = 1; j <= forecasetInfo_date.size(); j++)
+        {
+            axisX->append(forecasetInfo_date.at(j-1), j*2);//axisX->append("a", 1);
+        }
+        qDebug() << "[leo]forecasetInfo_date.size():" << forecasetInfo_date.size();
+        axisX->setRange(0,  forecasetInfo_date.size()*2);
+    }
+
+
+
     axisY->setRange(y_min - 1 , y_max + 1);
-    axisY->setTitleText("");
     axisY->setLabelFormat("%d");
     //axisY->setGridLineVisible(true);//设置刻度是否显示
 
 
     QChart *chart = new QChart();
-    chart->addSeries(series);//把曲线添加到chart上
+    chart->addSeries(seriesMax);//把曲线Max添加到chart上
+    chart->addSeries(seriesMin);//把曲线Min添加到chart上
     chart->setTitle(tr("未来四天温度走势图"));
-    chart->setAnimationOptions(QChart::SeriesAnimations);//设置曲线呈动画显示
+    //chart->setAnimationOptions(QChart::AllAnimations);//设置曲线呈动画显示
     //chart->createDefaultAxes();//创建曲线的轴 默认值
-    chart->setAxisX(axisX, series);
-    chart->setAxisY(axisY, series);
+    chart->setAxisX(axisX, seriesMax);
+    chart->setAxisY(axisY, seriesMax);
+    chart->setAxisX(axisX, seriesMin);
+    chart->setAxisY(axisY, seriesMin);
 
-    if(valueList.at(0) != "")//valueList的第一个字符内容，如果内容为空则隐藏legend，否则显示字符内容为标题
+
+    if(maxList.at(0) != "")//valueList的第一个字符内容，如果内容为空则隐藏legend，否则显示字符内容为标题
     {
       chart->legend()->show();
     }
@@ -508,7 +523,7 @@ void Widget::splineChart(QStringList valueList)
     }
 
 
-//    QString axisX_str = valueList.at(1);//设置X轴的范围
+//    QString axisX_str = maxList.at(1);//设置X轴的范围
 //    if(axisX_str != "")
 //    {
 //      qDebug() << axisX_str;
@@ -517,7 +532,7 @@ void Widget::splineChart(QStringList valueList)
 //      chart->axisX()->setRange(axisX_p, axisX_l);//设置X轴的范围，如果不设置，将默认取当前线段上的点的最大x,y的值作为最大range
 //    }
 
-//    QString axisY_str = valueList.at(2);//设置Y轴的范围
+//    QString axisY_str = maxList.at(2);//设置Y轴的范围
 //    if(axisY_str != "")
 //    {
 //      qDebug() << axisY_str;
