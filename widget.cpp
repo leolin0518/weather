@@ -161,7 +161,7 @@ void Widget::getForecastWeatherInfo(QJsonObject data)
     qDebug() << "forecastInfo_wenduMin:" << forecastInfo_wenduMin;
 
     QStringList set_chart_string;
-    set_chart_string << "Max:" << "" << "" << forecastInfo_wenduMax ;//("Min", "", "", "0,20", "1,20", "2,20", "3,18")
+    set_chart_string << "Max" << "" << "" << forecastInfo_wenduMax ;//("Min", "", "", "0,20", "1,20", "2,20", "3,18")
     qDebug() << "set_chart_string:" << set_chart_string;
 
     QStringList set_chart_string_wendu_min;
@@ -498,7 +498,7 @@ void Widget::splineChart(QStringList maxList, QStringList minList)
 
 
 
-    axisY->setRange(y_min - 1 , y_max + 1);
+    axisY->setRange(y_min - 3 , y_max + 3);
     axisY->setLabelFormat("%d");
     //axisY->setGridLineVisible(true);//设置刻度是否显示
 
@@ -508,7 +508,7 @@ void Widget::splineChart(QStringList maxList, QStringList minList)
     chart->addSeries(seriesMax);//把曲线Max添加到chart上
     chart->addSeries(seriesMin);//把曲线Min添加到chart上
     chart->setTitle(tr("未来四天温度走势图"));
-    //chart->setAnimationOptions(QChart::AllAnimations);//设置曲线呈动画显示
+    chart->setAnimationOptions(QChart::GridAxisAnimations);//设置曲线呈动画显示
     //chart->createDefaultAxes();//创建曲线的轴 默认值
     chart->setAxisX(axisX, seriesMax);
     chart->setAxisY(axisY, seriesMax);
@@ -622,10 +622,10 @@ void Widget::on_save_pushButton_clicked()
 void Widget::on_city_comboBox_p_activated(const QString &arg1)
 {
     ui->city_comboBox_c->clear();
-    refreshCityInfo(ui->city_comboBox_p->currentText());
+    refreshCityInfo(arg1);
 }
 
 void Widget::on_city_comboBox_c_activated(const QString &arg1)
 {
-     refreshCityInfo(ui->city_comboBox_c->currentText());
+     refreshCityInfo(arg1);
 }

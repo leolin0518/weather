@@ -228,9 +228,9 @@
   <widget class="QLabel" name="currCity_label">
    <property name="geometry">
     <rect>
-     <x>0</x>
+     <x>6</x>
      <y>35</y>
-     <width>51</width>
+     <width>61</width>
      <height>16</height>
     </rect>
    </property>
@@ -241,7 +241,7 @@
     <string>上海</string>
    </property>
    <property name="alignment">
-    <set>Qt::AlignCenter</set>
+    <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
    </property>
   </widget>
   <widget class="QGroupBox" name="todayInfo_groupBox_2">
@@ -460,10 +460,10 @@
   <widget class="QChartView" name="chart_widget" native="true">
    <property name="geometry">
     <rect>
-     <x>40</x>
+     <x>10</x>
      <y>180</y>
-     <width>431</width>
-     <height>161</height>
+     <width>501</width>
+     <height>201</height>
     </rect>
    </property>
   </widget>
