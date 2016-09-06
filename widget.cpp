@@ -170,8 +170,8 @@ void Widget::getForecastWeatherInfo(QJsonObject data)
 
     splineChart(set_chart_string, set_chart_string_wendu_min);
     //splineChart(set_chart_string_wendu_min);
-    set_chart_string.clear();
     forecastInfo_wenduMax.clear();
+    forecastInfo_wenduMin.clear();
 
 }
 
@@ -418,6 +418,7 @@ void Widget::setUI_information()//设置界面显示信息，如当前温度，�
 
 void Widget::splineChart(QStringList maxList, QStringList minList)
 {
+
     int x_max = 0, x_min = 100, y_max = 0, y_min = 100;
     qDebug() << "maxList:" << maxList << maxList.size();
     qDebug() << "minList:" << minList << minList.size();
@@ -493,6 +494,7 @@ void Widget::splineChart(QStringList maxList, QStringList minList)
         qDebug() << "[leo]forecasetInfo_date.size():" << forecasetInfo_date.size();
         axisX->setRange(0,  forecasetInfo_date.size()*2);
     }
+    forecasetInfo_date.clear();
 
 
 
@@ -502,6 +504,7 @@ void Widget::splineChart(QStringList maxList, QStringList minList)
 
 
     QChart *chart = new QChart();
+
     chart->addSeries(seriesMax);//把曲线Max添加到chart上
     chart->addSeries(seriesMin);//把曲线Min添加到chart上
     chart->setTitle(tr("未来四天温度走势图"));
