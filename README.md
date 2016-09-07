@@ -17,8 +17,13 @@ PS：<br/>
 　　2.下拉框的省市区获取是通过API获取
 　　
 ----------
-![主界面](https://github.com/leolin0518/weather/blob/master/readme/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20160904230011.png)
-![下拉框示意图](https://github.com/leolin0518/weather/blob/master/readme/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20160904230116.png)
+![主界面](https://github.com/leolin0518/weather/blob/master/readme/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20160907142852.png)
+![下拉框示意图](https://github.com/leolin0518/weather/blob/master/readme/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20160907142917.png)
+
+--------------
+Mac os：<br/>
+![](https://github.com/leolin0518/weather/blob/master/readme/124069423592656912.jpg)
+![](https://github.com/leolin0518/weather/blob/master/readme/707810833920055381.jpg)
 
 
 ----------
