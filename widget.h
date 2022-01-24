@@ -21,6 +21,8 @@ struct WeatherInfo{
     QString fengli;
     QString fengxiang;
     QString aqi;
+
+    QString text; //	"text": "阴",
 };
 
 
@@ -38,8 +40,11 @@ public:
     void init();
     void ui_init();
 
-    void setNetworkRequest(QNetworkRequest &request, QString cityName);//设置网络请求
+    void setNetworkRequestWeather(QNetworkRequest &request, QString cityName);//设置网络请求
     void setNetworkRequestCityInfo(QNetworkRequest &request, QString Name);//设置网络请求获取省市区信息
+
+    void setNetworkRequestTime(QNetworkRequest &request);//设置，发送post获取网络北京时间
+
 
     void getHistoryWeatherInfo(QJsonObject data);                   //获取历史天气信息
     void getTodayWeatherInfo(QJsonObject data);                     //获取当日天气信息
@@ -63,6 +68,9 @@ private slots:
 
     void getReplyFinishedCityInfo(QNetworkReply *reply);
 
+    void getReplyFinishedTime(QNetworkReply *reply);
+
+
     void on_comboBox_currentIndexChanged(const QString &arg1);
 
     void on_showSetting_pushButton_clicked();//显示cityList
@@ -73,10 +81,14 @@ private slots:
 
     void on_city_comboBox_c_activated(const QString &arg1);
 
+    void on_pushButton_clicked();
+
 private:
     Ui::Widget *ui;
     QNetworkAccessManager *manage;
     QNetworkAccessManager *manage_cityInfo;
+    QNetworkAccessManager *manage_time;
+
 
 public:
     WeatherInfo todayInfo;

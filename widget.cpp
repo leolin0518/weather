@@ -12,10 +12,11 @@
 #include <QSqlError>
 #include <QSqlQuery>
 
-//test github
-
+QNetworkRequest network_request_time;
 QNetworkRequest network_request;
 QNetworkRequest network_request_cityinfo;
+
+
 Widget::Widget(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::Widget)
@@ -31,14 +32,19 @@ Widget::Widget(QWidget *parent) :
      qDebug() << "init cityName:" << cityName;
 
      //发送请求
-     setNetworkRequest(network_request, cityName);
+     setNetworkRequestWeather(network_request, cityName);
      setNetworkRequestCityInfo(network_request_cityinfo,provName);
      connect(manage,SIGNAL(finished(QNetworkReply *)),this,SLOT(getReplyFinished(QNetworkReply*)));
      connect(manage_cityInfo, SIGNAL(finished(QNetworkReply *)), this, SLOT(getReplyFinishedCityInfo(QNetworkReply*)));
 
+
+
+
     /*发送get网络请求*/
     manage->get(network_request);
     manage_cityInfo->get(network_request_cityinfo);
+//    manage_time->get(network_request_time);
+
 }
 
 Widget::~Widget()
@@ -64,24 +70,51 @@ void Widget::ui_init()//界面初始化
     getProvinceList();
 }
 
-void Widget::setNetworkRequest(QNetworkRequest &request, QString cityName)
+void Widget::setNetworkRequestWeather(QNetworkRequest &request, QString cityName)
 {
-    request.setUrl(QUrl(QString("http://apis.baidu.com/apistore/weatherservice/recentweathers?cityname=%1")
-                                .arg(cityName)));
-    request.setRawHeader("apikey", "b446bb51d329b1098b008568231a772b");
+//    request.setUrl(QUrl(QString("http://apis.baidu.com/apistore/weatherservice/recentweathers?cityname=%1")
+//                                .arg(cityName)));
+ //   request.setRawHeader("apikey", "b446bb51d329b1098b008568231a772b");
+
+    request.setUrl(QUrl("https://devapi.qweather.com/v7/weather/now?location=101010100&key=930cc953111c43c6924f88ebda8b00df"));
+
+
 }
 
 void Widget::setNetworkRequestCityInfo(QNetworkRequest &request, QString Name)
 {
-    request.setUrl(QUrl(QString("http://apis.baidu.com/apistore/weatherservice/citylist?cityname=%1")
+//    request.setUrl(QUrl(QString("http://apis.baidu.com/apistore/weatherservice/citylist?cityname=%1")
+//                                .arg(Name)));
+//    request.setRawHeader("apikey", "b446bb51d329b1098b008568231a772b");
+
+
+    request.setUrl(QUrl(QString("https://geoapi.qweather.com/v2/city/lookup?location=%1&key=930cc953111c43c6924f88ebda8b00df")
                                 .arg(Name)));
-    request.setRawHeader("apikey", "b446bb51d329b1098b008568231a772b");
+
+
+}
+
+void Widget::setNetworkRequestTime(QNetworkRequest &request)
+{
+    //request.setUrl(QUrl(QString("http://quan.suning.com/getSysTime.do")));
+    request.setUrl(QUrl("http://quan.suning.com/getSysTime.do"));
+
+   // request.setUrl(QUrl("https://devapi.qweather.com/v7/weather/now?location=101010100&key=930cc953111c43c6924f88ebda8b00df"));
+
+
+
 }
 
 void Widget::getTodayWeatherInfo(QJsonObject data)
 {
 
-    QJsonObject today = data.value("retData").toObject().value("today").toObject();
+    QJsonObject today = data.value("now").toObject();
+    qDebug() << "today:" << today;
+    todayInfo.text = today.value("text").toString();//阵雨
+    qDebug() << "todayInfo:" <<  todayInfo.text;
+
+#if 0
+
     todayInfo.currCity = data.value("retData").toObject().value("city").toString();
     qDebug() << "currCity:" << todayInfo.currCity;
     todayInfo.date = today.value("date").toString();//2016-08-26
@@ -104,6 +137,8 @@ void Widget::getTodayWeatherInfo(QJsonObject data)
                   << todayInfo.aqi;
 
     setUI_information();//设置UI上的信息
+
+#endif
 
 }
 
@@ -234,7 +269,7 @@ void Widget::getOtherInfo(QJsonObject data)
 void Widget::refreshWeather(QString str)
 {
 
-    setNetworkRequest(network_request, str);
+    setNetworkRequestWeather(network_request, str);
     manage->get(network_request);
 }
 
@@ -557,19 +592,19 @@ void Widget::splineChart(QStringList maxList, QStringList minList)
 void Widget::getReplyFinished(QNetworkReply *reply)//获取天气api传回的数据
 {
     QJsonObject json_data = QJsonDocument::fromJson(reply->readAll()).object();
-    //qDebug() << "Json 天气信息:" << json_data;
+    qDebug() << "Json 天气信息:" << json_data;
 
     //获取历史天气信息
     //getHistoryWeatherInfo(json_data);
 
     //获取当日天气信息
-    getTodayWeatherInfo(json_data);
+     getTodayWeatherInfo(json_data);
 
     //获取未来天气信息
-    getForecastWeatherInfo(json_data);
+    //getForecastWeatherInfo(json_data);
 
     //获取其他天气信息
-    getOtherInfo(json_data);
+    //getOtherInfo(json_data);
 
 
 }
@@ -577,12 +612,53 @@ void Widget::getReplyFinished(QNetworkReply *reply)//获取天气api传回的数
 void Widget::getReplyFinishedCityInfo(QNetworkReply *reply)
 {
     QJsonObject json_citydata = QJsonDocument::fromJson(reply->readAll()).object();
-    qDebug() << "Json 天气信息:" << json_citydata;
+    qDebug() << __LINE__ << "Json 城市信息:" << json_citydata;
 
-    //getProvinceList();
+    getProvinceList();
     getCityList(json_citydata);
-    getAreaList(json_citydata);
+    //getAreaList(json_citydata);
 
+}
+
+void Widget::getReplyFinishedTime(QNetworkReply *reply)
+{
+
+    if (reply->error() == QNetworkReply::NoError)
+    {
+         QByteArray bytes = reply->readAll();
+         qDebug() << __LINE__ << bytes;
+         QJsonObject json_timedata = QJsonDocument::fromJson(reply->readAll()).object();
+         qDebug() <<"object size:"<< json_timedata.size();
+//         qDebug() << "Json 时间信息:" << json_timedata;
+//         QJsonArray Array=json_timedata["sysTime2"].toArray();
+//         qDebug() << "Json Array:" << Array;
+
+
+//         for (QJsonObject::Iterator it = json_timedata.begin();it != json_timedata.end(); it++)
+//         {
+//            QJsonValue value=it.value();
+//            QJsonArray Array=value.toArray();//将value转成QJsonArray或QJsonObject，继续遍历
+//            qDebug()<< value.toString();
+
+//         }
+
+         if(reply->url()==QUrl("http://quan.suning.com/getSysTime.do"))
+         {
+             qDebug() << __LINE__ << bytes;
+         }
+         else
+         {
+             qDebug() << __LINE__ << bytes;
+         }
+
+     }
+     else
+     {
+         qDebug() << "finishedSlot errors here";
+         qDebug( "found error .... code: %d\n", (int)reply->error());
+     }
+
+     reply->deleteLater();
 }
 
 
@@ -630,4 +706,32 @@ void Widget::on_city_comboBox_p_activated(const QString &arg1)
 void Widget::on_city_comboBox_c_activated(const QString &arg1)
 {
      refreshCityInfo(arg1);
+}
+
+void Widget::on_pushButton_clicked()
+{
+    qDebug()<<"QSslSocket="<<QSslSocket::sslLibraryBuildVersionString();
+    qDebug() << "OpenSSL支持情况:" << QSslSocket::supportsSsl();
+#if 1
+    manage_time = new QNetworkAccessManager(this);
+    connect(manage_time, SIGNAL(finished(QNetworkReply *)), this, SLOT(getReplyFinishedTime(QNetworkReply*)));
+
+    setNetworkRequestTime(network_request_time);
+
+    //get
+    manage_time->get(network_request_time);
+
+
+#else
+
+    QNetworkAccessManager *accessManager = new QNetworkAccessManager(this);
+
+    connect(accessManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(getReplyFinishedTime(QNetworkReply*)));
+
+    QNetworkRequest request;
+    request.setUrl(QUrl("http://quan.suning.com/getSysTime.do"));
+
+    //get
+    accessManager->get(request);
+#endif
 }
