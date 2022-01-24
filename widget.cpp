@@ -12,6 +12,8 @@
 #include <QSqlError>
 #include <QSqlQuery>
 
+//test github
+
 QNetworkRequest network_request;
 QNetworkRequest network_request_cityinfo;
 Widget::Widget(QWidget *parent) :
