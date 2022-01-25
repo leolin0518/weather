@@ -22,7 +22,25 @@ struct WeatherInfo{
     QString fengxiang;
     QString aqi;
 
-    QString text; //	"text": "阴",
+    QString obsTime;        //数据观测时间
+    QString temp;           //温度，默认单位：摄氏度
+    QString feelsLike;      //体感温度，默认单位：摄氏度
+    QString text;           //天气状况的文字描述，包括阴晴雨雪等天气状态的描述
+    QString windDir;        //风向
+    QString windScale;      //风力等级
+    QString windSpeed;      //风速，公里/小时
+    QString code;           //API状态码，具体含义请参考状态码
+
+    QString fxDate;       //预报日期
+    QString textDay;      //预报白天天气状况文字描述，包括阴晴雨雪等天气状态的描述
+    QString textNight;      //预报晚间天气状况文字描述，包括阴晴雨雪等天气状态的描述
+    QString tempMax;      //预报当天最高温度
+    QString tempMin;      //预报当天最低温度
+    QString windDirDay;      //预报白天风向
+    QString windScaleDay;      //预报白天风力等级
+
+
+
 };
 
 
@@ -100,6 +118,8 @@ public:
     QStringList forecastInfo_wenduMax;
     QStringList forecastInfo_wenduMin;
     QStringList forecasetInfo_date;
+
+
 };
 
 #endif // WIDGET_H

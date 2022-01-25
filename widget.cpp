@@ -16,6 +16,8 @@ QNetworkRequest network_request_time;
 QNetworkRequest network_request;
 QNetworkRequest network_request_cityinfo;
 
+struct WeatherInfo weather_info[3];
+#define WEATHER_DAY_NUM 3
 
 Widget::Widget(QWidget *parent) :
     QWidget(parent),
@@ -72,13 +74,7 @@ void Widget::ui_init()//界面初始化
 
 void Widget::setNetworkRequestWeather(QNetworkRequest &request, QString cityName)
 {
-//    request.setUrl(QUrl(QString("http://apis.baidu.com/apistore/weatherservice/recentweathers?cityname=%1")
-//                                .arg(cityName)));
- //   request.setRawHeader("apikey", "b446bb51d329b1098b008568231a772b");
-
-    request.setUrl(QUrl("https://devapi.qweather.com/v7/weather/now?location=101010100&key=930cc953111c43c6924f88ebda8b00df"));
-
-
+    request.setUrl(QUrl("https://devapi.qweather.com/v7/weather/3d?location=101010100&key=930cc953111c43c6924f88ebda8b00df"));
 }
 
 void Widget::setNetworkRequestCityInfo(QNetworkRequest &request, QString Name)
@@ -108,10 +104,137 @@ void Widget::setNetworkRequestTime(QNetworkRequest &request)
 void Widget::getTodayWeatherInfo(QJsonObject data)
 {
 
-    QJsonObject today = data.value("now").toObject();
-    qDebug() << "today:" << today;
-    todayInfo.text = today.value("text").toString();//阵雨
-    qDebug() << "todayInfo:" <<  todayInfo.text;
+//    qDebug() << __LINE__ <<  "data------------------:"  << data;
+
+    QJsonObject daily = data.value("daily").toObject();
+    qDebug() << __LINE__ <<  "QJsonObject--daily----------------:"  << daily;
+
+    if (data.contains(QString("daily")) && (data.value(QString("daily")).isArray()))
+        {
+            QJsonArray subJsonArray = data.value(QString("daily")).toArray();
+            int subJsonArraySize = subJsonArray.size();
+            qDebug() << __LINE__ <<  subJsonArraySize;
+
+            for (int i = 0; i < subJsonArraySize;i++)
+            {
+
+                QJsonValue subJsonValue = subJsonArray.at(i);
+                qDebug() << __LINE__ <<  "subJsonValue------------------:"  << subJsonValue;
+
+                if (subJsonValue.isObject())
+                {
+                    QJsonObject subJsonObject = subJsonValue.toObject();
+
+                    //预报日期
+                    QString fxDateTmp = subJsonObject.value("fxDate").toString();
+                    if(fxDateTmp.isEmpty())
+                    {
+                       weather_info[i].fxDate = " ";
+                    }
+                    else
+                    {
+                       weather_info[i].fxDate = fxDateTmp;
+                    }
+
+                    //预报白天天气状况文字描述，包括阴晴雨雪等天气状态的描述
+                    QString textDayTmp = subJsonObject.value("textDay").toString();
+                    if(textDayTmp.isEmpty())
+                    {
+                       weather_info[i].textDay = " ";
+                    }
+                    else
+                    {
+                       weather_info[i].textDay = textDayTmp;
+                    }
+
+                    //预报当天最高温度
+                    QString tempMaxTmp = subJsonObject.value("tempMax").toString();
+                    if(tempMaxTmp.isEmpty())
+                    {
+                       weather_info[i].tempMax = " ";
+                    }
+                    else
+                    {
+                       weather_info[i].tempMax = tempMaxTmp;
+                    }
+
+                    //预报当天最低温度
+                    QString tempMinTmp = subJsonObject.value("tempMin").toString();
+                    if(tempMinTmp.isEmpty())
+                    {
+                       weather_info[i].tempMin = " ";
+                    }
+                    else
+                    {
+                       weather_info[i].tempMin = tempMinTmp;
+                    }
+
+                    //预报白天风向
+                    QString windDirDayTmp = subJsonObject.value("windDirDay").toString();
+                    if(windDirDayTmp.isEmpty())
+                    {
+                       weather_info[i].windDirDay = " ";
+                    }
+                    else
+                    {
+                       weather_info[i].windDirDay = windDirDayTmp;
+                    }
+
+                    //预报白天风力等级
+                    QString windScaleDayTmp = subJsonObject.value("windScaleDay").toString();
+                    if(windScaleDayTmp.isEmpty())
+                    {
+                       weather_info[i].windScaleDay = " ";
+                    }
+                    else
+                    {
+                       weather_info[i].windScaleDay = windScaleDayTmp;
+                    }
+
+
+
+
+#if 0
+                    //使用QVariant的方式获取value对应的值
+                    if (subJsonObject.contains(QString("fxDate")) && (QVariant(subJsonObject.value(QString("fxDate"))).canConvert<QString>()))
+                    {
+                        QString fxDateTmp = QString(QVariant(subJsonObject.value(QString("fxDate"))).value<QString>());
+                        if(fxDateTmp.isEmpty())
+                        {
+                           weather_info[i].fxDate = " ";
+                        }
+                        else
+                        {
+                           weather_info[i].fxDate = fxDateTmp;
+                        }
+                    }
+                    if (subJsonObject.contains(QString("textDay")) && (QVariant(subJsonObject.value(QString("textDay"))).canConvert<QString>()))
+                    {
+                        QString textDayTmp = QString(QVariant(subJsonObject.value(QString("textDay"))).value<QString>());
+                        if(textDayTmp.isEmpty())
+                        {
+                           weather_info[i].textDay = " ";
+                        }
+                        else
+                        {
+                           weather_info[i].textDay = textDayTmp;
+                        }
+                    }
+#endif
+                }
+            }
+        }
+
+
+    for(int i=0; i < 3; i++)
+    {
+        qDebug() << "weather_info[i].fxDate" <<  weather_info[i].fxDate;
+        qDebug() << "weather_info[i].textDay" <<  weather_info[i].textDay;
+
+    }
+
+
+
 
 #if 0
 
@@ -130,15 +253,16 @@ void Widget::getTodayWeatherInfo(QJsonObject data)
     qDebug() << "getTodayWeatherInfo:\n" << todayInfo.currCity + todayInfo.date + todayInfo.week << todayInfo.type << todayInfo.curTemp
              << todayInfo.hightemp << todayInfo.lowtemp << todayInfo.fengli << todayInfo.fengxiang
              << todayInfo.aqi;
+#endif
 
-    QStringList todayInfoList;
-    todayInfoList << todayInfo.currCity + todayInfo.date + todayInfo.week << todayInfo.type << todayInfo.curTemp
-                  << todayInfo.hightemp << todayInfo.lowtemp << todayInfo.fengli << todayInfo.fengxiang
-                  << todayInfo.aqi;
+//    QStringList todayInfoList;
+//    todayInfoList << todayInfo.currCity + todayInfo.date + todayInfo.week << todayInfo.type << todayInfo.curTemp
+//                  << todayInfo.hightemp << todayInfo.lowtemp << todayInfo.fengli << todayInfo.fengxiang
+//                  << todayInfo.aqi;
 
     setUI_information();//设置UI上的信息
 
-#endif
+
 
 }
 
@@ -341,42 +465,47 @@ void Widget::getAreaList(QJsonObject data)
 
 void Widget::setUI_information()//设置界面显示信息，如当前温度，空气指数等
 {
-    ui->currCity_label->clear();
-    ui->currCity_label->setText(todayInfo.currCity);//显示当前城市
 
-    ui->dangqian_wendu_label->clear();
-    ui->dangqian_wendu_label->setText(todayInfo.curTemp);//显示当前实时温度
-
-    QString dangqian_min_max = tr("温度: ") + todayInfo.lowtemp + " ~ " + todayInfo.hightemp;
-    ui->dangqian_min_maxwendu_info_label->setText(dangqian_min_max);//显示当前温度范围
-
-    QString dangqian_date = todayInfo.date + "  " + todayInfo.week;
-    ui->dangqian_date_info_label->setText(dangqian_date);//显示当前日期
-
-    ui->dangqian_kongqizhiliang_info_label->setText(tr("实时空气质量:"));
-    ui->dangqian_kongqizhiliang_img_label->setText(todayInfo.aqi);//显示当前空气质量
-    int aqi = todayInfo.aqi.toInt();
-    qDebug() << "aqi:" << aqi;
-    if(aqi >=0 && aqi <= 50 )
+    for(int i=0; i < WEATHER_DAY_NUM; i++)
     {
-      ui->dangqian_kongqizhiliang_img_label->setStyleSheet("background-color:#51FF00;");
-    }
-    if(aqi > 50 && aqi <= 100 )
-    {
-      ui->dangqian_kongqizhiliang_img_label->setStyleSheet("background-color:#AFDB00;");
-    }
-    if(aqi > 100 && aqi <= 200 )
-    {
-      ui->dangqian_kongqizhiliang_img_label->setStyleSheet("background-color:#FF6666;");
-    }
-    if(aqi > 200)
-    {
-      ui->dangqian_kongqizhiliang_img_label->setStyleSheet("background-color:#CC0033;");
-    }
+        int demo_int=0;
+        ui->currCity_label->clear();
+        ui->currCity_label->setText(todayInfo.code);//显示当前城市
+
+        QString dangqian_min_max = tr("温度: ") + weather_info[demo_int].tempMin + " ~ " + weather_info[demo_int].tempMax;
+        ui->dangqian_min_maxwendu_info_label->setText(dangqian_min_max);//显示当前温度范围
+
+//        ui->dangqian_wendu_label->clear();
+//        ui->dangqian_wendu_label->setText(todayInfo.temp);//显示当前实时温度
+
+//        QString dangqian_date =  weather_info[demo_int].fxDate;
+//        ui->dangqian_date_info_label->setText(dangqian_date);//预报日期
+
+        ui->dangqian_kongqizhiliang_info_label->setText(tr("实时空气质量:"));
+        ui->dangqian_kongqizhiliang_img_label->setText("40");//显示当前空气质量
+        int aqi = 40;
+        qDebug() << "aqi:" << aqi;
+        if(aqi >=0 && aqi <= 50 )
+        {
+          ui->dangqian_kongqizhiliang_img_label->setStyleSheet("background-color:#51FF00;");
+        }
+        if(aqi > 50 && aqi <= 100 )
+        {
+          ui->dangqian_kongqizhiliang_img_label->setStyleSheet("background-color:#AFDB00;");
+        }
+        if(aqi > 100 && aqi <= 200 )
+        {
+          ui->dangqian_kongqizhiliang_img_label->setStyleSheet("background-color:#FF6666;");
+        }
+        if(aqi > 200)
+        {
+          ui->dangqian_kongqizhiliang_img_label->setStyleSheet("background-color:#CC0033;");
+        }
 
 
-    //设置天气img start
-        if(todayInfo.type == "晴")
+        //设置天气img start
+        QString textDayTmp = weather_info[demo_int].textDay;
+        if(textDayTmp == "晴")
         {
             QPixmap tianqi_pixmap(":/img/ico/qing.png");
             //qDebug() << tianqi_pixmap.width() << " /" << tianqi_pixmap.height();
@@ -385,7 +514,7 @@ void Widget::setUI_information()//设置界面显示信息，如当前温度，�
             ui->dangqian_tianqi_img_label->setPixmap(tianqi_pixmap);
             ui->dangqian_tianqi_img_label->show();
         }
-        if(todayInfo.type == "阴")
+        if(textDayTmp == "阴")
         {
             QPixmap tianqi_pixmap(":/img/ico/yin.png");
             //qDebug() << tianqi_pixmap.width() << " /" << tianqi_pixmap.height();
@@ -394,7 +523,7 @@ void Widget::setUI_information()//设置界面显示信息，如当前温度，�
             ui->dangqian_tianqi_img_label->setPixmap(tianqi_pixmap);
             ui->dangqian_tianqi_img_label->show();
         }
-        if(todayInfo.type == "阵雨" || todayInfo.type == "雷阵雨")
+        if(textDayTmp == "阵雨" || textDayTmp == "雷阵雨")
         {
             QPixmap tianqi_pixmap(":/img/ico/leizhenyu.png");
             //qDebug() << tianqi_pixmap.width() << " /" << tianqi_pixmap.height();
@@ -404,7 +533,7 @@ void Widget::setUI_information()//设置界面显示信息，如当前温度，�
             ui->dangqian_tianqi_img_label->show();
         }
 
-        if(todayInfo.type == "多云")
+        if(textDayTmp == "多云")
         {
             QPixmap tianqi_pixmap(":/img/ico/duoyun.png");
             //qDebug() << tianqi_pixmap.width() << " /" << tianqi_pixmap.height();
@@ -414,7 +543,7 @@ void Widget::setUI_information()//设置界面显示信息，如当前温度，�
             ui->dangqian_tianqi_img_label->show();
         }
 
-        if(todayInfo.type == "小雨")
+        if(textDayTmp == "小雨")
         {
             QPixmap tianqi_pixmap(":/img/ico/xiaoyu.png");
             //qDebug() << tianqi_pixmap.width() << " /" << tianqi_pixmap.height();
@@ -423,7 +552,7 @@ void Widget::setUI_information()//设置界面显示信息，如当前温度，�
             ui->dangqian_tianqi_img_label->setPixmap(tianqi_pixmap);
             ui->dangqian_tianqi_img_label->show();
         }
-        if(todayInfo.type == "中雨")
+        if(textDayTmp == "中雨")
         {
             QPixmap tianqi_pixmap(":/img/ico/xiaoyu.png");
             //qDebug() << tianqi_pixmap.width() << " /" << tianqi_pixmap.height();
@@ -432,7 +561,7 @@ void Widget::setUI_information()//设置界面显示信息，如当前温度，�
             ui->dangqian_tianqi_img_label->setPixmap(tianqi_pixmap);
             ui->dangqian_tianqi_img_label->show();
         }
-        if(todayInfo.type == "大雨")
+        if(textDayTmp == "大雨")
         {
             QPixmap tianqi_pixmap(":/img/ico/dayu.png");
             //qDebug() << tianqi_pixmap.width() << " /" << tianqi_pixmap.height();
@@ -441,7 +570,7 @@ void Widget::setUI_information()//设置界面显示信息，如当前温度，�
             ui->dangqian_tianqi_img_label->setPixmap(tianqi_pixmap);
             ui->dangqian_tianqi_img_label->show();
         }
-        if(todayInfo.type == "undefined")
+        if(textDayTmp == "undefined")
         {
             QPixmap tianqi_pixmap(":/img/ico/undefined.png");
             //qDebug() << tianqi_pixmap.width() << " /" << tianqi_pixmap.height();
@@ -451,6 +580,20 @@ void Widget::setUI_information()//设置界面显示信息，如当前温度，�
             ui->dangqian_tianqi_img_label->show();
         }
         //设置天气img end
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+
 }
 
 void Widget::splineChart(QStringList maxList, QStringList minList)
