@@ -295,57 +295,7 @@ void Widget::getForecastWeatherInfo(QJsonObject data)
 {
     forecastInfo_wenduMax.clear();
     forecastInfo_wenduMin.clear();
-    /*
-    QStringList forecastInfoList;
-    QJsonArray forecastArray = data.value("retData").toObject().value("forecast").toArray();
-    int size = forecastArray.size();
-    qDebug() << "size;" << size;
 
-    for(int i=0; i < size; i++)
-    {
-        QJsonObject forecast = forecastArray.at(i).toObject();
-
-        forecastInfo.date = forecast.value("date").toString();
-        forecastInfo.week = forecast.value("week").toString();
-        forecastInfo.type = forecast.value("type").toString();
-        forecastInfo.curTemp = forecast.value("curTemp").toString();
-        forecastInfo.hightemp = forecast.value("hightemp").toString();
-        forecastInfo.lowtemp = forecast.value("lowtemp").toString();
-        forecastInfo.fengli = forecast.value("fengli").toString();
-        forecastInfo.fengxiang = forecast.value("fengxiang").toString();
-        forecastInfo.aqi = forecast.value("aqi").toString();
-//        qDebug() << forecastInfo.date + forecastInfo.week << forecastInfo.type << forecastInfo.curTemp
-//                 << forecastInfo.hightemp << forecastInfo.lowtemp << forecastInfo.fengli << forecastInfo.fengxiang
-//                 << forecastInfo.aqi;
-
-        QString foreInfo = forecastInfo.date + "," + forecastInfo.week + "," +  forecastInfo.type + "," + forecastInfo.type + "," +
-                           forecastInfo.hightemp + "," + forecastInfo.lowtemp + "," + forecastInfo.fengli + "," + forecastInfo.fengxiang +"," + forecastInfo.aqi;
-        qDebug() << "foreInfo:" << foreInfo;//"2016-09-03,星期六,多云,多云,34℃,25℃,微风级,东风,"
-        forecastInfoList << foreInfo;
-        forecasetInfo_date << forecastInfo.date;
-
-        qDebug() << "forecastInfoList:" << forecastInfoList;
-
-    }
-
-
-    for(int i=0, j=1; i < forecastInfoList.size(); i++)
-    {
-        QString tmp = forecastInfoList.at(i);
-        qDebug() << tmp;
-       // QString dd = tmp.section(',', 4, 4);//34℃
-       // QString ddd = dd.mid(0,2);//mid()函数接受两个参数，第一个是起始位置，第二个是取串的长度。34℃ -> 34
-        //QString i_str = QString::number(dd,10);
-       // qDebug() << "ddd: " << ddd;
-        QString wendu_max =QString::number(j,10) + "," + tmp.section(',', 4, 4).mid(0,2);//34℃ 最高温度
-        QString wendu_min =QString::number(j,10) + "," + tmp.section(',', 5, 5).mid(0,2);//14℃ 最低温度
-        j = j + 2;
-        qDebug() << "wendu_max: " << wendu_max << "wendu_min:" << wendu_min;
-       // wendu_max =  i + "," + wendu_max;
-        forecastInfo_wenduMax << wendu_max;
-        forecastInfo_wenduMin << wendu_min;
-    }
-*/
     //未来3天的，最高最低温度信息
     for(int i=0; i < WEATHER_DAY_NUM; i++)
     {
@@ -356,7 +306,6 @@ void Widget::getForecastWeatherInfo(QJsonObject data)
         forecastInfo_wenduMax << wendu_max;
         forecastInfo_wenduMin << wendu_min;
     }
-
 
     qDebug() << "forecastInfo_wenduMax:" << forecastInfo_wenduMax;//forecastInfo_wenduMax: ("34℃", "33℃", "31℃", "31℃")
     qDebug() << "forecastInfo_wenduMin:" << forecastInfo_wenduMin;
@@ -372,8 +321,6 @@ void Widget::getForecastWeatherInfo(QJsonObject data)
     qDebug() << "set_chart_string_wendu_min:" << set_chart_string_wendu_min;
 
     splineChart(set_chart_string_wendu_max, set_chart_string_wendu_min);
-
-
 
 }
 
@@ -550,17 +497,15 @@ void Widget::setUI_information()//设置界面显示信息，如当前温度，�
 
     for(int i=0; i < WEATHER_DAY_NUM; i++)
     {
-        int demo_int=0;
-//        ui->currCity_label->clear();
-//        ui->currCity_label->setText(todayInfo.code);//显示当前城市
+        int weather_stu_index=0;//weather结构体的0代表是当天天气信息
 
-        QString dangqian_min_max = tr("温度: ") + weather_info[demo_int].tempMin + " ~ " + weather_info[demo_int].tempMax;
+        QString dangqian_min_max = tr("温度: ") + weather_info[weather_stu_index].tempMin + " ~ " + weather_info[weather_stu_index].tempMax;
         ui->dangqian_min_maxwendu_info_label->setText(dangqian_min_max);//显示当前温度范围
 
 //        ui->dangqian_wendu_label->clear();
 //        ui->dangqian_wendu_label->setText(todayInfo.temp);//显示当前实时温度
 
-//        QString dangqian_date =  weather_info[demo_int].fxDate;
+//        QString dangqian_date =  weather_info[weather_stu_index].fxDate;
 //        ui->dangqian_date_info_label->setText(dangqian_date);//预报日期
 
         ui->dangqian_kongqizhiliang_info_label->setText(tr("实时空气质量:"));
@@ -586,7 +531,7 @@ void Widget::setUI_information()//设置界面显示信息，如当前温度，�
 
 
         //设置天气img start
-        QString textDayTmp = weather_info[demo_int].textDay;
+        QString textDayTmp = weather_info[weather_stu_index].textDay;
         if(textDayTmp == "晴")
         {
             QPixmap tianqi_pixmap(":/img/ico/qing.png");
@@ -684,10 +629,11 @@ void Widget::setUI_information()//设置界面显示信息，如当前温度，�
 
 }
 
+//绘制曲线图
 void Widget::splineChart(QStringList maxList, QStringList minList)
 {
-    int x_jiange = 30;
-    int y_jiange = 10;
+    int x_jiange = 30; //x轴的间隔
+    int y_jiange = 3;  //y轴的间隔
 
     qDebug() << __LINE__ << "maxList:" << maxList << maxList.size();
     qDebug() << __LINE__ << "minList:" << minList << minList.size();
@@ -790,7 +736,25 @@ void Widget::splineChart(QStringList maxList, QStringList minList)
     axisX->setRange(0,  90);
 
     //温度轴
-    axisY->setRange(-10 , 15);
+    //a.获取温度的最大和最小值
+    int wenduzhou_max = 50;
+    int wenduzhou_min = -30;
+    for(int i=0; i < maxList.size(); i++)
+    {
+        QString tmp = maxList.at(i);
+        int value = tmp.toInt();
+        wenduzhou_max = qMax(-100,value);
+    }
+
+    for(int i=0; i < minList.size(); i++)
+    {
+        QString tmp = minList.at(i);
+        int value = tmp.toInt();
+        wenduzhou_min = qMin(100,value);
+    }
+    qDebug() << __LINE__ << "wenduzhou_max" << wenduzhou_max << "wenduzhou_min" << wenduzhou_min;
+
+    axisY->setRange(wenduzhou_min - y_jiange , wenduzhou_max + y_jiange);
     axisY->setLabelFormat("%d");
     //axisY->setGridLineVisible(true);//设置刻度是否显示
 
