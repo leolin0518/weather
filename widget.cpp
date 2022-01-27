@@ -363,12 +363,12 @@ void Widget::getForecastWeatherInfo(QJsonObject data)
 
     QStringList set_chart_string_wendu_max;
     set_chart_string_wendu_max.clear();
-    set_chart_string_wendu_max << "Max" << forecastInfo_wenduMax ;//("Min", "", "", "0,20", "1,20", "2,20", "3,18")
+    set_chart_string_wendu_max << forecastInfo_wenduMax ;//("Min", "", "", "0,20", "1,20", "2,20", "3,18")
     qDebug() << "set_chart_string_wendu_max:" << set_chart_string_wendu_max;
 
     QStringList set_chart_string_wendu_min;
     set_chart_string_wendu_min.clear();
-    set_chart_string_wendu_min << "Min" << forecastInfo_wenduMin ;
+    set_chart_string_wendu_min << forecastInfo_wenduMin ;
     qDebug() << "set_chart_string_wendu_min:" << set_chart_string_wendu_min;
 
     splineChart(set_chart_string_wendu_max, set_chart_string_wendu_min);
@@ -596,7 +596,7 @@ void Widget::setUI_information()//设置界面显示信息，如当前温度，�
             ui->dangqian_tianqi_img_label->setPixmap(tianqi_pixmap);
             ui->dangqian_tianqi_img_label->show();
         }
-        if(textDayTmp == "阴")
+        else if(textDayTmp == "阴")
         {
             QPixmap tianqi_pixmap(":/img/ico/yin.png");
             //qDebug() << tianqi_pixmap.width() << " /" << tianqi_pixmap.height();
@@ -605,7 +605,7 @@ void Widget::setUI_information()//设置界面显示信息，如当前温度，�
             ui->dangqian_tianqi_img_label->setPixmap(tianqi_pixmap);
             ui->dangqian_tianqi_img_label->show();
         }
-        if(textDayTmp == "阵雨" || textDayTmp == "雷阵雨")
+        else if(textDayTmp == "阵雨" || textDayTmp == "雷阵雨")
         {
             QPixmap tianqi_pixmap(":/img/ico/leizhenyu.png");
             //qDebug() << tianqi_pixmap.width() << " /" << tianqi_pixmap.height();
@@ -614,8 +614,7 @@ void Widget::setUI_information()//设置界面显示信息，如当前温度，�
             ui->dangqian_tianqi_img_label->setPixmap(tianqi_pixmap);
             ui->dangqian_tianqi_img_label->show();
         }
-
-        if(textDayTmp == "多云")
+        else if(textDayTmp == "多云")
         {
             QPixmap tianqi_pixmap(":/img/ico/duoyun.png");
             //qDebug() << tianqi_pixmap.width() << " /" << tianqi_pixmap.height();
@@ -624,8 +623,7 @@ void Widget::setUI_information()//设置界面显示信息，如当前温度，�
             ui->dangqian_tianqi_img_label->setPixmap(tianqi_pixmap);
             ui->dangqian_tianqi_img_label->show();
         }
-
-        if(textDayTmp == "小雨")
+        else if(textDayTmp == "小雨")
         {
             QPixmap tianqi_pixmap(":/img/ico/xiaoyu.png");
             //qDebug() << tianqi_pixmap.width() << " /" << tianqi_pixmap.height();
@@ -634,16 +632,16 @@ void Widget::setUI_information()//设置界面显示信息，如当前温度，�
             ui->dangqian_tianqi_img_label->setPixmap(tianqi_pixmap);
             ui->dangqian_tianqi_img_label->show();
         }
-        if(textDayTmp == "中雨")
+        else if(textDayTmp == "中雨")
         {
-            QPixmap tianqi_pixmap(":/img/ico/xiaoyu.png");
+            QPixmap tianqi_pixmap(":/img/ico/zhongyu.png");
             //qDebug() << tianqi_pixmap.width() << " /" << tianqi_pixmap.height();
             tianqi_pixmap = tianqi_pixmap.scaled(ui->dangqian_tianqi_img_label->width(), ui->dangqian_tianqi_img_label->height(),
                                                  Qt::IgnoreAspectRatio, Qt::SmoothTransformation);//设置图片大小和label的长宽一致
             ui->dangqian_tianqi_img_label->setPixmap(tianqi_pixmap);
             ui->dangqian_tianqi_img_label->show();
         }
-        if(textDayTmp == "大雨")
+        else if(textDayTmp == "大雨")
         {
             QPixmap tianqi_pixmap(":/img/ico/dayu.png");
             //qDebug() << tianqi_pixmap.width() << " /" << tianqi_pixmap.height();
@@ -652,7 +650,25 @@ void Widget::setUI_information()//设置界面显示信息，如当前温度，�
             ui->dangqian_tianqi_img_label->setPixmap(tianqi_pixmap);
             ui->dangqian_tianqi_img_label->show();
         }
-        if(textDayTmp == "undefined")
+        else if(textDayTmp.contains("雪"))
+        {
+            QPixmap tianqi_pixmap(":/img/ico/xue.png");
+            //qDebug() << tianqi_pixmap.width() << " /" << tianqi_pixmap.height();
+            tianqi_pixmap = tianqi_pixmap.scaled(ui->dangqian_tianqi_img_label->width(), ui->dangqian_tianqi_img_label->height(),
+                                                 Qt::IgnoreAspectRatio, Qt::SmoothTransformation);//设置图片大小和label的长宽一致
+            ui->dangqian_tianqi_img_label->setPixmap(tianqi_pixmap);
+            ui->dangqian_tianqi_img_label->show();
+        }
+        else if(textDayTmp.contains("雨夹雪"))
+        {
+            QPixmap tianqi_pixmap(":/img/ico/yujiaxue.png");
+            //qDebug() << tianqi_pixmap.width() << " /" << tianqi_pixmap.height();
+            tianqi_pixmap = tianqi_pixmap.scaled(ui->dangqian_tianqi_img_label->width(), ui->dangqian_tianqi_img_label->height(),
+                                                 Qt::IgnoreAspectRatio, Qt::SmoothTransformation);//设置图片大小和label的长宽一致
+            ui->dangqian_tianqi_img_label->setPixmap(tianqi_pixmap);
+            ui->dangqian_tianqi_img_label->show();
+        }
+        else
         {
             QPixmap tianqi_pixmap(":/img/ico/undefined.png");
             //qDebug() << tianqi_pixmap.width() << " /" << tianqi_pixmap.height();
@@ -670,56 +686,74 @@ void Widget::setUI_information()//设置界面显示信息，如当前温度，�
 
 void Widget::splineChart(QStringList maxList, QStringList minList)
 {
+    int x_jiange = 30;
+    int y_jiange = 10;
 
-    int x_max = 0, x_min = 100, y_max = 0, y_min = 100;
     qDebug() << __LINE__ << "maxList:" << maxList << maxList.size();
     qDebug() << __LINE__ << "minList:" << minList << minList.size();
+
+    if(maxList.size() < 3 || minList.size() < 3)
+    {
+        qDebug() << __LINE__ << "maxList  minList error. return";
+        return;
+    }
+
 
     QSplineSeries *seriesMax = new QSplineSeries();//曲线 //new QLineSeries();//折线
     QSplineSeries *seriesMin = new QSplineSeries();//曲线
 
-    seriesMax->setName(maxList.at(0));//设置曲线Max的标题内容
-    seriesMin->setName(minList.at(0));//设置曲线Min的标题内容
+    seriesMax->setName("Max");//设置曲线Max的标题内容
+    seriesMin->setName("Min");//设置曲线Min的标题内容
     seriesMax->setPen(QPen(Qt::red,2,Qt::SolidLine));//设置曲线颜色宽度
     seriesMin->setPen(QPen(Qt::blue,2,Qt::SolidLine));
 
+
+
+    int max_length = maxList.size();
+    int max_tmp = max_length - 1; //画曲线点的最后一点
     for(int i=0; i < maxList.size(); i++)//Max曲线上添加点坐标
     {
       QString tmp = maxList.at(i);
-      qDebug() << tmp;
-      int value_p = tmp.section(',', 0, 0).toInt();//"5,8" int:  5
-      int value_l = tmp.section(',', 1, 1).toInt();//"5,8" int:  8
-      x_max = qMax(x_max, value_p);
-      x_min = qMin(x_min, value_p);
-      y_max = qMax(y_max, value_l);
-      y_min = qMin(y_min, value_l);
-      qDebug() << "Max->int: " << value_p << "," << value_l;
-      seriesMax->append(value_p, value_l);
+      int value_x = x_jiange*(i+1);
+      int value_y = tmp.toInt();
+      if(i == 0)
+      {
+            value_x = 15*(i+1);
+      }
+      if(i == max_tmp)
+      {
+            value_x = value_x - 15;
+      }
+
+      qDebug() << __LINE__ << value_x << value_y;
+
+      seriesMax->append(value_x,value_y);
     }
 
-
-    for(int i=3; i < minList.size(); i++)//Min曲线上添加点坐标
+    for(int i=0; i < minList.size(); i++)//Min曲线上添加点坐标
     {
       QString tmp = minList.at(i);
-      qDebug() << tmp;
-      int value_p = tmp.section(',', 0, 0).toInt();//"5,8" int:  5
-      int value_l = tmp.section(',', 1, 1).toInt();//"5,8" int:  8
-      x_max = qMax(x_max, value_p);
-      x_min = qMin(x_min, value_p);
-      y_max = qMax(y_max, value_l);
-      y_min = qMin(y_min, value_l);
-      qDebug() << "Min->int: " << value_p << "," << value_l;
-      seriesMin->append(value_p, value_l);
+      int value_x = x_jiange*(i+1);
+      int value_y = tmp.toInt();
+      if(i == 0)
+      {
+            value_x = 15*(i+1);
+      }
+      if(i == max_tmp)
+      {
+            value_x = value_x - 15;
+      }
+      qDebug() << __LINE__ << value_x << value_y;
+      seriesMin->append(value_x,value_y);
     }
 
-
-    qDebug() << "x_max: " << x_max << ",x_min" << x_min;//x轴上对应的点的最大值和最小值
-    qDebug() << "y_max: " << y_max << ",y_min" << y_min;//y轴上对应的点的最大值和最小值
+//    qDebug() << "x_max: " << x_max << ",x_min" << x_min;//x轴上对应的点的最大值和最小值
+//    qDebug() << "y_max: " << y_max << ",y_min" << y_min;//y轴上对应的点的最大值和最小值
 
 
 
     QCategoryAxis *axisX = new QCategoryAxis();
-    QValueAxis *axisY = new QValueAxis;//http://blog.csdn.net/linbounconstraint/article/details/52440807
+    QValueAxis    *axisY = new QValueAxis;      //懒人版    //http://blog.csdn.net/linbounconstraint/article/details/52440807
 
     //自定义XY轴上显示的label的颜色 Customize axis label colors
     //QBrush axisBrush(Qt::black);
@@ -737,20 +771,26 @@ void Widget::splineChart(QStringList maxList, QStringList minList)
         Pairt(1,20) Pairt(3,20) Pairt(5,20) Pairt(7,20)
         //    axisX->append("a", 1);
     */
-    if(!forecasetInfo_date.isEmpty())
-    {
-        for(int j = 1; j <= forecasetInfo_date.size(); j++)
-        {
-            axisX->append(forecasetInfo_date.at(j-1), j*2);//axisX->append("a", 1);
-        }
-        qDebug() << "[leo]forecasetInfo_date.size():" << forecasetInfo_date.size();
-        axisX->setRange(0,  forecasetInfo_date.size()*2);
-    }
-    forecasetInfo_date.clear();
+//    if(!forecasetInfo_date.isEmpty())
+//    {
+//        for(int j = 1; j <= forecasetInfo_date.size(); j++)
+//        {
+//            axisX->append(forecasetInfo_date.at(j-1), j*2);//axisX->append("a", 1);
+//        }
+//        qDebug() << "[leo]forecasetInfo_date.size():" << forecasetInfo_date.size();
+//        axisX->setRange(0,  forecasetInfo_date.size()*2);
+//    }
+//    forecasetInfo_date.clear();
 
 
+    //日期轴
+    axisX->append("今天",30);
+    axisX->append("明天",60);
+    axisX->append("后天",90);
+    axisX->setRange(0,  90);
 
-    axisY->setRange(y_min - 3 , y_max + 3);
+    //温度轴
+    axisY->setRange(-10 , 15);
     axisY->setLabelFormat("%d");
     //axisY->setGridLineVisible(true);//设置刻度是否显示
 
@@ -759,23 +799,24 @@ void Widget::splineChart(QStringList maxList, QStringList minList)
 
     chart->addSeries(seriesMax);//把曲线Max添加到chart上
     chart->addSeries(seriesMin);//把曲线Min添加到chart上
-    chart->setTitle(tr("未来四天温度走势图"));
+    chart->setTitle(tr("未来三天天温度走势图"));
     chart->setAnimationOptions(QChart::GridAxisAnimations);//设置曲线呈动画显示
     //chart->createDefaultAxes();//创建曲线的轴 默认值
-    chart->setAxisX(axisX, seriesMax);
-    chart->setAxisY(axisY, seriesMax);
-    chart->setAxisX(axisX, seriesMin);
-    chart->setAxisY(axisY, seriesMin);
+    chart->setAxisX(axisX, seriesMax);//把曲线Max加载到日期轴
+    chart->setAxisY(axisY, seriesMax);//把曲线Max加载到温度轴
+
+    chart->setAxisX(axisX, seriesMin);//把曲线Min加载到日期轴
+    chart->setAxisY(axisY, seriesMin);//把曲线Min加载到温度轴
 
 
-    if(maxList.at(0) != "")//valueList的第一个字符内容，如果内容为空则隐藏legend，否则显示字符内容为标题
-    {
-      chart->legend()->show();
-    }
-    else
-    {
-      chart->legend()->hide();
-    }
+//    if(maxList.at(0) != "")//valueList的第一个字符内容，如果内容为空则隐藏legend，否则显示字符内容为标题
+//    {
+//      chart->legend()->show();
+//    }
+//    else
+//    {
+//      chart->legend()->hide();
+//    }
 
 
 //    QString axisX_str = maxList.at(1);//设置X轴的范围
