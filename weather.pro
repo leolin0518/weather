@@ -15,11 +15,14 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
+        settingform.cpp \
         widget.cpp
 
-HEADERS  += widget.h
+HEADERS  += widget.h \
+    settingform.h
 
-FORMS    += widget.ui
+FORMS    += widget.ui \
+    settingform.ui
 
 RESOURCES += \
     img.qrc

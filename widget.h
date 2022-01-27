@@ -10,6 +10,8 @@ class QNetworkAccessManager;
 class QNetworkRequest;
 class QNetworkReply;
 
+
+
 struct WeatherInfo{
     QString currCity;
     QString date;
@@ -59,9 +61,10 @@ public:
     void ui_init();
 
     void setNetworkRequestWeather(QNetworkRequest &request, QString cityName);//设置网络请求
-    void setNetworkRequestCityInfo(QNetworkRequest &request, QString Name);//设置网络请求获取省市区信息
+//    void setNetworkRequestCityInfo(QNetworkRequest &request, QString Name);//设置网络请求获取省市区信息
 
     void setNetworkRequestTime(QNetworkRequest &request);//设置，发送post获取网络北京时间
+    void setNetworkRequestCityInfo(QString cityName);
 
 
     void getHistoryWeatherInfo(QJsonObject data);                   //获取历史天气信息
@@ -70,16 +73,19 @@ public:
     void getOtherInfo(QJsonObject data);                            //获取其他天气信息
     void setAqi(QString &strAqi);                                   //设置空气质量指数显示
     void refreshWeather(QString str);
-    void refreshCityInfo(QString str);
+//    void refreshCityInfo(QString str);
 
     void getProvinceList();    //显示省份信息
     void getCityList(QJsonObject data);
     void getAreaList(QJsonObject data);
 
 
+
     void setUI_information();   //设置界面显示信息，如当前温度，空气指数等
     void splineChart(QStringList maxList, QStringList minList);//简单的线条曲线图 http://doc.qt.io/qt-5/qtcharts-splinechart-example.html
 
+
+    void refresh_weather_api(QString city, QString city_id);
 
 private slots:
     void getReplyFinished(QNetworkReply *reply);
@@ -89,21 +95,29 @@ private slots:
     void getReplyFinishedTime(QNetworkReply *reply);
 
 
-    void on_comboBox_currentIndexChanged(const QString &arg1);
+ //   void on_comboBox_currentIndexChanged(const QString &arg1);
 
     void on_showSetting_pushButton_clicked();//显示cityList
 
     void on_save_pushButton_clicked();//保存
 
-    void on_city_comboBox_p_activated(const QString &arg1);
+//    void on_city_comboBox_p_activated(const QString &arg1);
 
-    void on_city_comboBox_c_activated(const QString &arg1);
+//    void on_city_comboBox_c_activated(const QString &arg1);
 
     void on_pushButton_clicked();
 
+    void on_reWwather_pushButton_clicked();
+
+
+    void on_pushButton_setting_clicked();
+
+
+    void receiveDataFromSetting(QStringList data);   //接收传递过来的数据的槽
+
 private:
     Ui::Widget *ui;
-    QNetworkAccessManager *manage;
+    QNetworkAccessManager *manage_weather;
     QNetworkAccessManager *manage_cityInfo;
     QNetworkAccessManager *manage_time;
 
@@ -115,10 +129,11 @@ public:
     QStringList provinceList;               //省份列表
     QStringList cityList;                   //城市列表
     QStringList areaList;                   //区域列表
-    QStringList forecastInfo_wenduMax;
-    QStringList forecastInfo_wenduMin;
+    QStringList forecastInfo_wenduMax;  //未来天气最高温度
+    QStringList forecastInfo_wenduMin;  //未来天气最低温度
     QStringList forecasetInfo_date;
 
+    QStringList areaList_id;
 
 };
 
