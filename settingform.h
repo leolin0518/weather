@@ -28,6 +28,8 @@ public:
     QStringList cityList;
     QStringList cityList_id;
 
+    void create_data_file(QString city, QString cityID);
+
 private slots:
     void on_chaxun_pushButton_clicked();
 

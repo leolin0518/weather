@@ -1,11 +1,14 @@
 #include "settingform.h"
 #include "ui_settingform.h"
+#include <QFile>
+#include <QMessageBox>
 
-QNetworkRequest request_cityinfo;
+QNetworkRequest request_cityinfo; //获取天气信息的request
 
 
 extern QString global_city; //声明外部变量
 extern QString global_city_id; //声明外部变量
+extern QString global_data_file_path; //声明外部变量
 
 
 SettingForm::SettingForm(QWidget *parent) :
@@ -21,6 +24,37 @@ SettingForm::SettingForm(QWidget *parent) :
 SettingForm::~SettingForm()
 {
     delete ui;
+}
+
+void SettingForm::create_data_file(QString city, QString cityID)
+{
+    QString AppDirPath  = QApplication::applicationDirPath();
+    qDebug() << "AppDirPath:" << AppDirPath;
+    QString fileName = AppDirPath + "/" + "data.txt";
+    qDebug() << "fileName:" << fileName;
+    global_data_file_path = fileName;
+    QFile f(fileName);
+
+    if(!f.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        qDebug()  << "Open failed.";
+        QMessageBox::warning(this,"file error","can't open",QMessageBox::Yes);
+    }
+    qDebug()  << __LINE__ <<  "AAAAAAAAA" << city << cityID;
+
+    QTextStream in(&f);
+    //in << str;//没有回车
+    in << city << endl;//有回车
+    in << cityID << endl;//有回车
+
+//    for(int i=0; i< str.size(); i++)
+//    {
+//        qDebug()  << __LINE__ <<  str.at(i);
+//        in << str.at(i) << endl;//有回车
+//    }
+
+    f.close();
+
 }
 
 //搜索输入的城市的信息
@@ -141,6 +175,7 @@ void SettingForm::on_save_pushButton_clicked()
 
     QStringList sentData;
     sentData << global_city << global_city_id;
+    create_data_file(global_city, global_city_id);
     emit sendDataFromSettingToWidget(sentData);  //获取lineEdit的输入并且传递出去
     this->close();
 

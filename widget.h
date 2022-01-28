@@ -87,6 +87,10 @@ public:
 
     void refresh_weather_api(QString city, QString city_id);
 
+    QStringList read_data_file(QString file_path);
+    void firest_refresh_wather();
+
+
 private slots:
     void getReplyFinished(QNetworkReply *reply);
 

@@ -25,6 +25,7 @@ struct WeatherInfo weather_info[WEATHER_DAY_NUM];
 
 QString global_city; //声明一个全局变量用于窗体间传值
 QString global_city_id; //声明一个全局变量用于窗体间传值
+QString global_data_file_path; //声明一个全局变量用于窗体间传值
 
 
 
@@ -57,6 +58,14 @@ Widget::Widget(QWidget *parent) :
 
    // manage_cityInfo->get(network_request_cityinfo);
 //    manage_time->get(network_request_time);
+     firest_refresh_wather();
+     ui->currCityID_label->hide();
+     ui->lineEdit_City->hide();
+     ui->save_pushButton->hide();
+     ui->reWwather_pushButton->hide();
+     ui->pushButton->hide();
+     ui->showSetting_pushButton->hide();
+
 
 }
 
@@ -822,6 +831,50 @@ void Widget::refresh_weather_api(QString city, QString city_id)
         setNetworkRequestWeather(network_request, city_id);
         connect(manage_weather,SIGNAL(finished(QNetworkReply *)),this,SLOT(getReplyFinished(QNetworkReply*)));
         manage_weather->get(network_request);
+    }
+}
+
+QStringList Widget::read_data_file(QString file_path)
+{
+    QString AppDirPath  = QApplication::applicationDirPath();
+    qDebug() << "AppDirPath:" << AppDirPath;
+    QString fileName = AppDirPath + "/" + "data.txt";
+    qDebug() << "fileName:" << fileName;
+//    global_data_file_path = fileName;
+
+
+    QFile f(fileName);
+
+    if(!f.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        qDebug()  << "Open failed.";
+        QMessageBox::warning(this,"file error","找不到配置文件",QMessageBox::Yes);
+    }
+
+
+    QTextStream txtOutput(&f);
+    QString lineStr;
+    QStringList all_line_str;
+    while(!txtOutput.atEnd())
+    {
+        lineStr = txtOutput.readLine().trimmed();
+        all_line_str.append(lineStr);
+    }
+    qDebug()  << __LINE__ << "@@@@@@@all_lineStr:" << all_line_str;
+
+    qDebug()  << file_path;
+    f.close();
+   // f.remove(file_path);
+    return all_line_str;
+}
+
+void Widget::firest_refresh_wather()
+{
+    QStringList city_info = read_data_file(global_data_file_path);
+    if(city_info.size() == 2)
+    {
+        refresh_weather_api(city_info.first(), city_info.last());
+
     }
 }
 
