@@ -39,32 +39,12 @@ Widget::Widget(QWidget *parent) :
      /*设置发送数据*/
      manage_weather = new QNetworkAccessManager(this);
      manage_cityInfo = new QNetworkAccessManager(this);
-//     QString cityName = "北京";
-//     QString provName = "北京";
-//     qDebug() << __LINE__ << "init cityName:" << cityName;
 
-     //发送请求
-     //setNetworkRequestWeather(network_request, cityName);
-    // connect(manage,SIGNAL(finished(QNetworkReply *)),this,SLOT(getReplyFinished(QNetworkReply*)));
-
-     //setNetworkRequestCityInfo(network_request_cityinfo,provName);
-     //connect(manage_cityInfo, SIGNAL(finished(QNetworkReply *)), this, SLOT(getReplyFinishedCityInfo(QNetworkReply*)));
-
-
-
-
-    /*发送get网络请求*/
-    //manage->get(network_request);
-
-   // manage_cityInfo->get(network_request_cityinfo);
-//    manage_time->get(network_request_time);
+    /*软件启动第一次获取天气信息。从配置数据中获取*/
      firest_refresh_wather();
+
      ui->currCityID_label->hide();
-     ui->lineEdit_City->hide();
-     ui->save_pushButton->hide();
-     ui->reWwather_pushButton->hide();
      ui->pushButton->hide();
-     ui->showSetting_pushButton->hide();
 
 
 }
@@ -83,13 +63,6 @@ void Widget::init()
 void Widget::ui_init()//界面初始化
 {
     ui->dangqian_wendu_label->clear();
-
-    ui->city_comboBox_p->hide();
-    ui->city_comboBox_c->hide();
-    ui->city_comboBox_a->hide();
-
-    ui->save_pushButton->hide();
-    getProvinceList();
 }
 
 //搜索城市ID
@@ -118,24 +91,11 @@ void Widget::setNetworkRequestWeather(QNetworkRequest &request, QString cityName
     request.setUrl(QUrl(requst_url_str));
 }
 
-//void Widget::setNetworkRequestCityInfo(QNetworkRequest &request, QString Name)
-//{
 
-//    request.setUrl(QUrl(QString("https://geoapi.qweather.com/v2/city/lookup?location=%1&key=930cc953111c43c6924f88ebda8b00df")
-//                                .arg(Name)));
-
-
-//}
 
 void Widget::setNetworkRequestTime(QNetworkRequest &request)
 {
-    //request.setUrl(QUrl(QString("http://quan.suning.com/getSysTime.do")));
     request.setUrl(QUrl("http://quan.suning.com/getSysTime.do"));
-
-   // request.setUrl(QUrl("https://devapi.qweather.com/v7/weather/now?location=101010100&key=930cc953111c43c6924f88ebda8b00df"));
-
-
-
 }
 
 void Widget::getTodayWeatherInfo(QJsonObject data)
@@ -270,33 +230,7 @@ void Widget::getTodayWeatherInfo(QJsonObject data)
 
     }
 
-
-
-
-#if 0
-
-    todayInfo.currCity = data.value("retData").toObject().value("city").toString();
-    qDebug() << "currCity:" << todayInfo.currCity;
-    todayInfo.date = today.value("date").toString();//2016-08-26
-    todayInfo.week = today.value("week").toString();//星期五
-    todayInfo.type = today.value("type").toString();//阵雨
-    todayInfo.curTemp = today.value("curTemp").toString();//30℃
-    todayInfo.hightemp = today.value("hightemp").toString();//34℃
-    todayInfo.lowtemp = today.value("lowtemp").toString();//24℃
-    todayInfo.fengli = today.value("fengli").toString();//微风级
-    todayInfo.fengxiang = today.value("fengxiang").toString();//东北风
-    todayInfo.aqi = today.value("aqi").toString();//60
-
-    qDebug() << "getTodayWeatherInfo:\n" << todayInfo.currCity + todayInfo.date + todayInfo.week << todayInfo.type << todayInfo.curTemp
-             << todayInfo.hightemp << todayInfo.lowtemp << todayInfo.fengli << todayInfo.fengxiang
-             << todayInfo.aqi;
-#endif
-
-
     setUI_information();//设置UI上的信息
-
-
-
 }
 
 //处理未来天气，并使用splineChart,画出曲线图
@@ -395,110 +329,6 @@ void Widget::refreshWeather(QString str)
     connect(manage_weather,SIGNAL(finished(QNetworkReply *)),this,SLOT(getReplyFinished(QNetworkReply*)));
     manage_weather->get(network_request);
 }
-
-//void Widget::refreshCityInfo(QString str)
-//{
-
-////    setNetworkRequestCityInfo(network_request_cityinfo,str);
-////    manage_cityInfo->get(network_request_cityinfo);
-//}
-
-
-void Widget::getProvinceList()
-{
-    QStringList proName;
-    proName << "北京" << "上海"<< "天津" << "重庆" << "黑龙江" << "吉林" << "辽宁" << "内蒙古" << "河北" << "山西" << "陕西" << "山东" << "新疆" << "西藏" << "青海" << "甘肃" << "宁夏" << "河南" << "江苏" << "湖北" << "浙江" << "安徽" << "福建" << "江西" << "湖南" << "贵州" << "四川" << "广东" << "云南" << "广西" << "海南" << "香港" << "澳门" << "台湾";
-    ui->city_comboBox_p->clear();
-    ui->city_comboBox_p->addItems(proName);
-}
-
-void Widget::getCityList(QJsonObject data)
-{
-     QStringList cityInfoList;
-     cityInfoList.clear();
-     QJsonArray cityinfo = data.value("retData").toArray();
-     int size = cityinfo.size();
-     qDebug() << "cityinfo.......................size;" << size;
-     for(int i=0; i < size; i++)
-     {
-         QJsonObject tmp = cityinfo.at(i).toObject();
-         QString province_cn = tmp.value("province_cn").toString();
-         if(province_cn == ui->city_comboBox_p->currentText())
-         {
-             QString district_cn = tmp.value("district_cn").toString();
-             cityInfoList << district_cn;
-         }
-
-     }
-    qDebug() << "777777777777777777" << cityInfoList.removeDuplicates();
-    ui->city_comboBox_c->addItems(cityInfoList);
-
-}
-
-
-void Widget::getAreaList(QJsonObject data)
-{
-    areaList.clear();
-    areaList_id.clear();
-
-    ui->city_comboBox_a->clear();
-    QJsonArray cityinfo = data.value("location").toArray();
-    int size = cityinfo.size();
-    qDebug() << "cityinfo.......................size;" << size;
-    for(int i=0; i < size; i++)
-    {
-        QJsonObject tmp = cityinfo.at(i).toObject();
-        QString district_cn = tmp.value("name").toString();
-        qDebug() << __LINE__ << "district_cn" << district_cn;
-        areaList << district_cn;
-
-        QString city_id_tmp = tmp.value("id").toString();
-        qDebug() << __LINE__ << "city_id_tmp" << city_id_tmp;
-        areaList_id << city_id_tmp;
-
-
-    }
-
-    qDebug() << __LINE__ << "areaList" << areaList;
-    qDebug() << __LINE__ << "areaList_id" << areaList_id;
-
-    if(areaList.size() > 0)
-    {
-        QString city = areaList.first();
-
-        if(city.isEmpty())
-        {
-           ui->currCity_label->clear();
-        }
-        else
-        {
-           ui->currCity_label->setText(city);
-
-        }
-    }
-
-    if(areaList_id.size() > 0)
-    {
-        QString city_id = areaList_id.first();
-
-        if(city_id.isEmpty())
-        {
-           ui->currCityID_label->clear();
-        }
-        else
-        {
-           ui->currCityID_label->setText(city_id);
-
-        }
-    }
-
-
-    ui->city_comboBox_a->addItems(areaList);
-
-
-}
-
-
 
 
 void Widget::setUI_information()//设置界面显示信息，如当前温度，空气指数等
@@ -632,9 +462,7 @@ void Widget::setUI_information()//设置界面显示信息，如当前温度，�
             ui->dangqian_tianqi_img_label->show();
         }
         //设置天气img end
-
     }
-
 
 }
 
@@ -720,23 +548,6 @@ void Widget::splineChart(QStringList maxList, QStringList minList)
     //axisX->setMinorTickCount(4); //设置小刻度线的数目
     //axisX->setLabelsVisible(false); //设置刻度是否显示
 
-    /*
-        设置X轴上label的显示内容和范围
-        ("a", 2), 	("b", 4), 	("c", 6),	("d", 8),
-        Pairt(1,20) Pairt(3,20) Pairt(5,20) Pairt(7,20)
-        //    axisX->append("a", 1);
-    */
-//    if(!forecasetInfo_date.isEmpty())
-//    {
-//        for(int j = 1; j <= forecasetInfo_date.size(); j++)
-//        {
-//            axisX->append(forecasetInfo_date.at(j-1), j*2);//axisX->append("a", 1);
-//        }
-//        qDebug() << "[leo]forecasetInfo_date.size():" << forecasetInfo_date.size();
-//        axisX->setRange(0,  forecasetInfo_date.size()*2);
-//    }
-//    forecasetInfo_date.clear();
-
 
     //日期轴
     axisX->append("今天",30);
@@ -782,35 +593,6 @@ void Widget::splineChart(QStringList maxList, QStringList minList)
     chart->setAxisY(axisY, seriesMin);//把曲线Min加载到温度轴
 
 
-//    if(maxList.at(0) != "")//valueList的第一个字符内容，如果内容为空则隐藏legend，否则显示字符内容为标题
-//    {
-//      chart->legend()->show();
-//    }
-//    else
-//    {
-//      chart->legend()->hide();
-//    }
-
-
-//    QString axisX_str = maxList.at(1);//设置X轴的范围
-//    if(axisX_str != "")
-//    {
-//      qDebug() << axisX_str;
-//      int axisX_p = axisX_str.section(',', 0, 0).toInt();//"5,8" int:  5
-//      int axisX_l = axisX_str.section(',', 1, 1).toInt();//"5,8" int:  8
-//      chart->axisX()->setRange(axisX_p, axisX_l);//设置X轴的范围，如果不设置，将默认取当前线段上的点的最大x,y的值作为最大range
-//    }
-
-//    QString axisY_str = maxList.at(2);//设置Y轴的范围
-//    if(axisY_str != "")
-//    {
-//      qDebug() << axisY_str;
-//      int axisY_p = axisY_str.section(',', 0, 0).toInt();//"5,8" int:  5
-//      int axisY_l = axisY_str.section(',', 1, 1).toInt();//"5,8" int:  8
-//      chart->axisY()->setRange(axisY_p, axisY_l);//设置Y轴的范围，如果不设置，将默认取当前线段上的点的最大x,y的值作为最大range
-//    }
-
-
     ui->chart_widget->setRenderHint(QPainter::Antialiasing);//防止曲线出现“锯齿”现象
     ui->chart_widget->setChart(chart);
 
@@ -840,8 +622,6 @@ QStringList Widget::read_data_file(QString file_path)
     qDebug() << "AppDirPath:" << AppDirPath;
     QString fileName = AppDirPath + "/" + "data.txt";
     qDebug() << "fileName:" << fileName;
-//    global_data_file_path = fileName;
-
 
     QFile f(fileName);
 
@@ -850,7 +630,6 @@ QStringList Widget::read_data_file(QString file_path)
         qDebug()  << "Open failed.";
         QMessageBox::warning(this,"file error","找不到配置文件",QMessageBox::Yes);
     }
-
 
     QTextStream txtOutput(&f);
     QString lineStr;
@@ -905,11 +684,6 @@ void Widget::getReplyFinishedCityInfo(QNetworkReply *reply)
     QJsonObject json_citydata = QJsonDocument::fromJson(reply->readAll()).object();
     qDebug() << __LINE__ << "Json 城市信息:" << json_citydata;
 
-
-    //getProvinceList();
-    //getCityList(json_citydata);
-    getAreaList(json_citydata);
-
 }
 
 void Widget::getReplyFinishedTime(QNetworkReply *reply)
@@ -954,91 +728,6 @@ void Widget::getReplyFinishedTime(QNetworkReply *reply)
 }
 
 
-
-//void Widget::on_comboBox_currentIndexChanged(const QString &arg1)
-//{
-//    qDebug() << __LINE__ <<  arg1;
-//    //refreshWeather(arg1);
-//}
-
-
-//显示City选项
-void Widget::on_showSetting_pushButton_clicked()
-{
-
-    ui->save_pushButton->show();
-    //ui->showSetting_pushButton->hide();
-
-    ui->city_comboBox_p->show();
-    ui->city_comboBox_c->show();
-    ui->city_comboBox_a->show();
-
-
-    ui->lineEdit_City->show();
-    ui->lineEdit_City->setPlaceholderText(tr("请输入要查询的城市？"));
-
-}
-
-
-void Widget::on_save_pushButton_clicked()
-{
-
-   qDebug() << __FILE__ << __LINE__ << "global_city" << global_city;
-   qDebug() << __FILE__ << __LINE__ << "global_city_id" << global_city_id;
-
-   if(global_city.isEmpty())
-   {
-      ui->currCity_label->clear();
-   }
-   else
-   {
-      ui->currCity_label->setText(global_city);
-   }
-
-   if(global_city_id.isEmpty())
-   {
-      ui->currCityID_label->clear();
-   }
-   else
-   {
-      ui->currCityID_label->setText(global_city_id);
-   }
-
-  //  return;
-//    ui->save_pushButton->hide();
-//    ui->city_comboBox_p->hide();
-//    ui->city_comboBox_c->hide();
-//    ui->city_comboBox_a->hide();
-
-    ui->showSetting_pushButton->show();
-    //ui->currCity_label->setText(todayInfo.currCity);
-
-
-//    QString city = ui->lineEdit_City->text().trimmed();
-//    qDebug() << __LINE__ << "city:" << city;
-//    setNetworkRequestCityInfo(city);
-    //ui->lineEdit_City->hide();
-
-//    qDebug() << __LINE__ << "areaList:" << areaList;
-//    qDebug() << __LINE__ << "areaList_id:" << areaList_id;
-
-//    city = areaList.first();
-//    qDebug() << __LINE__ << "city:" << city;
-
-    //
-    //QString city_id = areaList_id.first();
-    //qDebug() << __LINE__ << "city_id:" << city_id;
-
-
-//    if(!city_id.isEmpty())
-//    {
-//        ui->currCityID_label->setText(city_id);
-//        ui->currCity_label->setText(city);
-//        refreshWeather(city_id);
-//    }
-
-
-}
 void Widget::on_reWwather_pushButton_clicked()
 {
     QString city_id = global_city_id;
@@ -1057,16 +746,6 @@ void Widget::on_reWwather_pushButton_clicked()
 }
 
 
-//void Widget::on_city_comboBox_p_activated(const QString &arg1)
-//{
-//    ui->city_comboBox_c->clear();
-//    refreshCityInfo(arg1);
-//}
-
-//void Widget::on_city_comboBox_c_activated(const QString &arg1)
-//{
-//     refreshCityInfo(arg1);
-//}
 
 void Widget::on_pushButton_clicked()
 {
@@ -1116,6 +795,5 @@ void Widget::receiveDataFromSetting(QStringList data)
         qDebug() << __FILE__ << __LINE__ << "传递过来的数据="<< data.last();
         refresh_weather_api(data.first(), data.last());
     }
-
 
 }
