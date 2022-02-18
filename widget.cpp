@@ -47,9 +47,7 @@ Widget::Widget(QWidget *parent) :
     /*发送get网络请求*/
      firest_refresh_wather();
      ui->currCityID_label->hide();
-     ui->lineEdit_City->hide();
-     ui->pushButton->hide();
-     ui->showSetting_pushButton->hide();
+     //ui->pushButton->hide();
 }
 
 Widget::~Widget()
@@ -66,9 +64,7 @@ void Widget::init()
 void Widget::ui_init()//界面初始化
 {
     ui->dangqian_wendu_label->clear();
-    ui->city_comboBox_p->hide();
-    ui->city_comboBox_c->hide();
-    ui->city_comboBox_a->hide();
+
 }
 
 //搜索城市ID
@@ -353,28 +349,6 @@ void Widget::getOtherInfo(QJsonObject data)
 }
 
 
-
-void Widget::getCityList(QJsonObject data)
-{
-     QStringList cityInfoList;
-     cityInfoList.clear();
-     QJsonArray cityinfo = data.value("retData").toArray();
-     int size = cityinfo.size();
-     qDebug() << "cityinfo.......................size;" << size;
-     for(int i=0; i < size; i++)
-     {
-         QJsonObject tmp = cityinfo.at(i).toObject();
-         QString province_cn = tmp.value("province_cn").toString();
-         if(province_cn == ui->city_comboBox_p->currentText())
-         {
-             QString district_cn = tmp.value("district_cn").toString();
-             cityInfoList << district_cn;
-         }
-
-     }
-    qDebug() << __FILE__ << __LINE__  << cityInfoList.removeDuplicates();
-    ui->city_comboBox_c->addItems(cityInfoList);
-}
 
 
 void Widget::setUI_information()//设置界面显示信息，如当前温度，空气指数等
@@ -822,32 +796,14 @@ void Widget::getReplyFinishedTime(QNetworkReply *reply)
 
     if (reply->error() == QNetworkReply::NoError)
     {
-         QByteArray bytes = reply->readAll();
-         qDebug() << __LINE__ << bytes;
-         QJsonObject json_timedata = QJsonDocument::fromJson(reply->readAll()).object();
-         qDebug() <<"object size:"<< json_timedata.size();
-//         qDebug() << "Json 时间信息:" << json_timedata;
-//         QJsonArray Array=json_timedata["sysTime2"].toArray();
-//         qDebug() << "Json Array:" << Array;
-
-
-//         for (QJsonObject::Iterator it = json_timedata.begin();it != json_timedata.end(); it++)
-//         {
-//            QJsonValue value=it.value();
-//            QJsonArray Array=value.toArray();//将value转成QJsonArray或QJsonObject，继续遍历
-//            qDebug()<< value.toString();
-
-//         }
-
-         if(reply->url()==QUrl("http://quan.suning.com/getSysTime.do"))
+         QJsonObject json_date = QJsonDocument::fromJson(reply->readAll()).object();
+         qDebug() << __LINE__ << "Json shijian:" << json_date;
+         QString now_date = json_date.value("sysTime2").toString();
+         qDebug() << __LINE__ << "now_date:" << now_date;
+         if(!now_date.isEmpty())
          {
-             qDebug() << __LINE__ << bytes;
+            ui->dangqian_date_info_label->setText(now_date);
          }
-         else
-         {
-             qDebug() << __LINE__ << bytes;
-         }
-
      }
      else
      {
@@ -861,47 +817,18 @@ void Widget::getReplyFinishedTime(QNetworkReply *reply)
 
 
 
-//显示City选项
-void Widget::on_showSetting_pushButton_clicked()
-{
-
-    //ui->showSetting_pushButton->hide();
-
-    ui->city_comboBox_p->show();
-    ui->city_comboBox_c->show();
-    ui->city_comboBox_a->show();
-
-    ui->lineEdit_City->show();
-    ui->lineEdit_City->setPlaceholderText(tr("请输入要查询的城市？"));
-
-}
-
-
 
 void Widget::on_reWwather_pushButton_clicked()
 {
-    QString city_id = global_city_id;
-    QString city = global_city;
-
-    qDebug() << __LINE__ << "city_id:" << city_id;
-    qDebug() << __LINE__ << "city:" << city;
-
-    if(!city_id.isEmpty())
-    {
-        //刷新天气
-        ui->currCity_label->setText(city);
-        ui->currCityID_label->setText(global_city_id);
-       // refreshWeather(city_id);
-       // refreshWeatherKongqizhiliang(city_id);
-    }
+   firest_refresh_wather();
 }
 
 
 void Widget::on_pushButton_clicked()
 {
-    qDebug()<<"QSslSocket="<<QSslSocket::sslLibraryBuildVersionString();
-    qDebug() << "OpenSSL支持情况:" << QSslSocket::supportsSsl();
-#if 1
+//    qDebug()<<"QSslSocket="<<QSslSocket::sslLibraryBuildVersionString();
+//    qDebug() << "OpenSSL支持情况:" << QSslSocket::supportsSsl();
+#if 0
     manage_time = new QNetworkAccessManager(this);
     connect(manage_time, SIGNAL(finished(QNetworkReply*)), this, SLOT(getReplyFinishedTime(QNetworkReply*)));
 

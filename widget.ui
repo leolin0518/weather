@@ -467,73 +467,6 @@
     </rect>
    </property>
   </widget>
-  <widget class="QWidget" name="layoutWidget">
-   <property name="geometry">
-    <rect>
-     <x>90</x>
-     <y>410</y>
-     <width>287</width>
-     <height>22</height>
-    </rect>
-   </property>
-   <layout class="QHBoxLayout" name="horizontalLayout_3">
-    <item>
-     <widget class="QComboBox" name="city_comboBox_p">
-      <property name="minimumSize">
-       <size>
-        <width>91</width>
-        <height>20</height>
-       </size>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QComboBox" name="city_comboBox_c">
-      <property name="minimumSize">
-       <size>
-        <width>91</width>
-        <height>20</height>
-       </size>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QComboBox" name="city_comboBox_a">
-      <property name="minimumSize">
-       <size>
-        <width>91</width>
-        <height>20</height>
-       </size>
-      </property>
-     </widget>
-    </item>
-   </layout>
-  </widget>
-  <widget class="QPushButton" name="showSetting_pushButton">
-   <property name="geometry">
-    <rect>
-     <x>430</x>
-     <y>410</y>
-     <width>45</width>
-     <height>23</height>
-    </rect>
-   </property>
-   <property name="minimumSize">
-    <size>
-     <width>45</width>
-     <height>23</height>
-    </size>
-   </property>
-   <property name="maximumSize">
-    <size>
-     <width>45</width>
-     <height>23</height>
-    </size>
-   </property>
-   <property name="text">
-    <string>设置</string>
-   </property>
-  </widget>
   <widget class="QPushButton" name="pushButton">
    <property name="geometry">
     <rect>
@@ -545,19 +478,6 @@
    </property>
    <property name="text">
     <string>PushButton</string>
-   </property>
-  </widget>
-  <widget class="QLineEdit" name="lineEdit_City">
-   <property name="geometry">
-    <rect>
-     <x>90</x>
-     <y>450</y>
-     <width>161</width>
-     <height>20</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string/>
    </property>
   </widget>
   <widget class="QLabel" name="currCityID_label">
@@ -582,7 +502,7 @@
   <widget class="QPushButton" name="reWwather_pushButton">
    <property name="geometry">
     <rect>
-     <x>320</x>
+     <x>380</x>
      <y>450</y>
      <width>45</width>
      <height>23</height>

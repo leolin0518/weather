@@ -76,13 +76,6 @@ public:
     void refreshWeather(QString str);
     void refreshWeatherKongqizhiliang(QString city_id);
 
-//    void refreshCityInfo(QString str);
-
-    void getProvinceList();    //显示省份信息
-    void getCityList(QJsonObject data);
-    void getAreaList(QJsonObject data);
-
-
 
     void setUI_information();   //设置界面显示信息，如当前温度，空气指数等
     void splineChart(QStringList maxList, QStringList minList);//简单的线条曲线图 http://doc.qt.io/qt-5/qtcharts-splinechart-example.html
@@ -103,9 +96,6 @@ private slots:
     void getReplyFinishedCityInfo(QNetworkReply *reply);
 
     void getReplyFinishedTime(QNetworkReply *reply);
-
-    void on_showSetting_pushButton_clicked();//显示cityList
-
 
     void on_pushButton_clicked();
 
