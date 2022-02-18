@@ -69,7 +69,6 @@ void SettingForm::on_chaxun_pushButton_clicked()
 
     QString requst_url_str = QString("https://geoapi.qweather.com/v2/city/lookup?location=%1&key=930cc953111c43c6924f88ebda8b00df").arg(cityName);
     //qDebug() << __LINE__ <<  "requst_url_str------------------:"  << requst_url_str;
-
     request.setUrl(QUrl(QString(requst_url_str)));
 
     //get
@@ -84,7 +83,6 @@ void SettingForm::getReplyCityInfo(QNetworkReply *reply)
     cityList.clear();
     cityList_id.clear();
 
-
     QJsonArray cityinfo = json_citydata.value("location").toArray();
     int size = cityinfo.size();
     qDebug() << "cityinfo.......................size;" << size;
@@ -98,8 +96,6 @@ void SettingForm::getReplyCityInfo(QNetworkReply *reply)
         QString city_id_tmp = tmp.value("id").toString();
        // qDebug() << __LINE__ << "city_id_tmp" << city_id_tmp;
         cityList_id << city_id_tmp;
-
-
     }
 
 //    qDebug() << __LINE__ << "cityList" << cityList;

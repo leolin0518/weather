@@ -42,34 +42,14 @@ Widget::Widget(QWidget *parent) :
      manage_weather = new QNetworkAccessManager(this);
      manage_weather_kqzl = new QNetworkAccessManager(this);
      manage_cityInfo = new QNetworkAccessManager(this);
-//     QString cityName = "北京";
-//     QString provName = "北京";
-//     qDebug() << __LINE__ << "init cityName:" << cityName;
-
-     //发送请求
-     //setNetworkRequestWeather(network_request, cityName);
-    // connect(manage,SIGNAL(finished(QNetworkReply *)),this,SLOT(getReplyFinished(QNetworkReply*)));
-
-     //setNetworkRequestCityInfo(network_request_cityinfo,provName);
-     //connect(manage_cityInfo, SIGNAL(finished(QNetworkReply *)), this, SLOT(getReplyFinishedCityInfo(QNetworkReply*)));
-
-
 
 
     /*发送get网络请求*/
-    //manage->get(network_request);
-
-   // manage_cityInfo->get(network_request_cityinfo);
-//    manage_time->get(network_request_time);
      firest_refresh_wather();
      ui->currCityID_label->hide();
      ui->lineEdit_City->hide();
-     ui->save_pushButton->hide();
-     //ui->reWwather_pushButton->hide();
      ui->pushButton->hide();
      ui->showSetting_pushButton->hide();
-
-
 }
 
 Widget::~Widget()
@@ -86,13 +66,9 @@ void Widget::init()
 void Widget::ui_init()//界面初始化
 {
     ui->dangqian_wendu_label->clear();
-
     ui->city_comboBox_p->hide();
     ui->city_comboBox_c->hide();
     ui->city_comboBox_a->hide();
-
-    ui->save_pushButton->hide();
-    //getProvinceList();
 }
 
 //搜索城市ID
@@ -106,7 +82,6 @@ void Widget::setNetworkRequestCityInfo(QString cityName)
 
     QString requst_url_str = QString("https://geoapi.qweather.com/v2/city/lookup?location=%1&key=930cc953111c43c6924f88ebda8b00df").arg(cityName);
     //qDebug() << __LINE__ <<  "requst_url_str------------------:"  << requst_url_str;
-
     request.setUrl(QUrl(QString(requst_url_str)));
 
     //get
@@ -117,7 +92,6 @@ void Widget::setNetworkRequestWeather(QNetworkRequest &request, QString cityName
 {
     QString requst_url_str = QString("https://devapi.qweather.com/v7/weather/3d?location=%1&key=930cc953111c43c6924f88ebda8b00df").arg(cityNameID);
     qDebug() << __LINE__ <<  "requst_url_str---kqzl---------------:"  << requst_url_str;
-
     request.setUrl(QUrl(requst_url_str));
 }
 
@@ -126,28 +100,15 @@ void Widget::setNetworkRequestWeatherKongQiZhiliang(QNetworkRequest &request, QS
 
     QString requst_url_str = QString("https://devapi.qweather.com/v7/air/now?location=%1&key=930cc953111c43c6924f88ebda8b00df").arg(cityNameId);
     qDebug() << __LINE__ <<  "requst_url_str------------------:"  << requst_url_str;
-
     request.setUrl(QUrl(requst_url_str));
 }
 
-//void Widget::setNetworkRequestCityInfo(QNetworkRequest &request, QString Name)
-//{
 
-//    request.setUrl(QUrl(QString("https://geoapi.qweather.com/v2/city/lookup?location=%1&key=930cc953111c43c6924f88ebda8b00df")
-//                                .arg(Name)));
-
-
-//}
 
 void Widget::setNetworkRequestTime(QNetworkRequest &request)
 {
     //request.setUrl(QUrl(QString("http://quan.suning.com/getSysTime.do")));
     request.setUrl(QUrl("http://quan.suning.com/getSysTime.do"));
-
-   // request.setUrl(QUrl("https://devapi.qweather.com/v7/weather/now?location=101010100&key=930cc953111c43c6924f88ebda8b00df"));
-
-
-
 }
 
 void Widget::getTodayWeatherInfo(QJsonObject data)
@@ -283,8 +244,6 @@ void Widget::getTodayWeatherInfo(QJsonObject data)
 //    }
 
 
-
-
 #if 0
 
     todayInfo.currCity = data.value("retData").toObject().value("city").toString();
@@ -306,9 +265,6 @@ void Widget::getTodayWeatherInfo(QJsonObject data)
 
 
     setUI_information();//设置UI上的信息
-
-
-
 }
 
 //处理未来天气，并使用splineChart,画出曲线图
@@ -342,10 +298,7 @@ void Widget::getForecastWeatherInfo(QJsonObject data)
 //    qDebug() << "set_chart_string_wendu_min:" << set_chart_string_wendu_min;
 
     splineChart(set_chart_string_wendu_max, set_chart_string_wendu_min);
-
 }
-
-
 
 
 void Widget::getOtherInfo(QJsonObject data)
@@ -401,8 +354,6 @@ void Widget::getOtherInfo(QJsonObject data)
 
 
 
-
-
 void Widget::getCityList(QJsonObject data)
 {
      QStringList cityInfoList;
@@ -421,75 +372,9 @@ void Widget::getCityList(QJsonObject data)
          }
 
      }
-    qDebug() << "777777777777777777" << cityInfoList.removeDuplicates();
+    qDebug() << __FILE__ << __LINE__  << cityInfoList.removeDuplicates();
     ui->city_comboBox_c->addItems(cityInfoList);
-
 }
-
-
-void Widget::getAreaList(QJsonObject data)
-{
-    areaList.clear();
-    areaList_id.clear();
-
-    ui->city_comboBox_a->clear();
-    QJsonArray cityinfo = data.value("location").toArray();
-    int size = cityinfo.size();
-    qDebug() << "cityinfo.......................size;" << size;
-    for(int i=0; i < size; i++)
-    {
-        QJsonObject tmp = cityinfo.at(i).toObject();
-        QString district_cn = tmp.value("name").toString();
-        qDebug() << __LINE__ << "district_cn" << district_cn;
-        areaList << district_cn;
-
-        QString city_id_tmp = tmp.value("id").toString();
-        qDebug() << __LINE__ << "city_id_tmp" << city_id_tmp;
-        areaList_id << city_id_tmp;
-
-
-    }
-
-    qDebug() << __LINE__ << "areaList" << areaList;
-    qDebug() << __LINE__ << "areaList_id" << areaList_id;
-
-    if(areaList.size() > 0)
-    {
-        QString city = areaList.first();
-
-        if(city.isEmpty())
-        {
-           ui->currCity_label->clear();
-        }
-        else
-        {
-           ui->currCity_label->setText(city);
-
-        }
-    }
-
-    if(areaList_id.size() > 0)
-    {
-        QString city_id = areaList_id.first();
-
-        if(city_id.isEmpty())
-        {
-           ui->currCityID_label->clear();
-        }
-        else
-        {
-           ui->currCityID_label->setText(city_id);
-
-        }
-    }
-
-
-    ui->city_comboBox_a->addItems(areaList);
-
-
-}
-
-
 
 
 void Widget::setUI_information()//设置界面显示信息，如当前温度，空气指数等
@@ -603,9 +488,7 @@ void Widget::setUI_information()//设置界面显示信息，如当前温度，�
             ui->dangqian_tianqi_img_label->show();
         }
         //设置天气img end
-
     }
-
 
 }
 
@@ -623,7 +506,6 @@ void Widget::splineChart(QStringList maxList, QStringList minList)
         qDebug() << __LINE__ << "maxList  minList error. return";
         return;
     }
-
 
     QSplineSeries *seriesMax = new QSplineSeries();//曲线 //new QLineSeries();//折线
     QSplineSeries *seriesMin = new QSplineSeries();//曲线
@@ -675,7 +557,6 @@ void Widget::splineChart(QStringList maxList, QStringList minList)
 
 //    qDebug() << "x_max: " << x_max << ",x_min" << x_min;//x轴上对应的点的最大值和最小值
 //    qDebug() << "y_max: " << y_max << ",y_min" << y_min;//y轴上对应的点的最大值和最小值
-
 
 
     QCategoryAxis *axisX = new QCategoryAxis();
@@ -789,6 +670,12 @@ void Widget::splineChart(QStringList maxList, QStringList minList)
 
 }
 
+//connect(manage_weather,SIGNAL(finished(QNetworkReply *)),this,SLOT(getReplyFinished(QNetworkReply*)));//, Qt::UniqueConnection);
+/*
+ * Qt::UniqueConnection是为了防止一次信号，多次槽函数。connect建立部分，放到初始化部分，只实例化时调用一次，避免了多次创建connect信号与槽的问题。
+其实问题的根本原因：就是要避免多次创建信号与槽。 多了解一下信号与槽的建立机制，或者在使用的时候，加上限制参数
+*/
+
 
 void Widget::refresh_weather_api(QString city, QString city_id)
 {
@@ -802,8 +689,7 @@ void Widget::refresh_weather_api(QString city, QString city_id)
         ui->currCityID_label->setText(city_id);
         //发送天气请求，获取的数据getReplyFinished进行处理
         setNetworkRequestWeather(network_request, city_id);
-        //setNetworkRequestWeatherKongQiZhiliang(network_request, city_id);
-        connect(manage_weather,SIGNAL(finished(QNetworkReply *)),this,SLOT(getReplyFinished(QNetworkReply*)), Qt::UniqueConnection);
+        connect(manage_weather,SIGNAL(finished(QNetworkReply*)),this,SLOT(getReplyFinished(QNetworkReply*)), Qt::UniqueConnection);
         manage_weather->get(network_request);
     }
 }
@@ -815,18 +701,10 @@ void Widget::refresh_weather_kqzl_api(QString city, QString city_id)
 
     if(!city_id.isEmpty())
     {
-
         //发送天气请求，获取的数据getReplyFinished进行处理
         setNetworkRequestWeatherKongQiZhiliang(network_request_weather_kqzl, city_id);
-        connect(manage_weather_kqzl,SIGNAL(finished(QNetworkReply *)),this,SLOT(getReplyFinishedForWeatherKqzl(QNetworkReply*)), Qt::UniqueConnection);
-        /*
-         * Qt::UniqueConnection是为了防止一次信号，多次槽函数。connect建立部分，放到初始化部分，只实例化时调用一次，避免了多次创建connect信号与槽的问题。
-        其实问题的根本原因：就是要避免多次创建信号与槽。 多了解一下信号与槽的建立机制，或者在使用的时候，加上限制参数
-        */
+        connect(manage_weather_kqzl,SIGNAL(finished(QNetworkReply*)),this,SLOT(getReplyFinishedForWeatherKqzl(QNetworkReply*)), Qt::UniqueConnection);
         manage_weather_kqzl->get(network_request_weather_kqzl);
-
-
-
     }
 }
 
@@ -837,7 +715,6 @@ QStringList Widget::read_data_file(QString file_path)
     QString fileName = AppDirPath + "/" + "data.txt";
     qDebug() << "fileName:" << fileName;
 //    global_data_file_path = fileName;
-
 
     QFile f(fileName);
 
@@ -871,7 +748,6 @@ void Widget::firest_refresh_wather()
     {
         refresh_weather_kqzl_api(city_info.first(), city_info.last());
         refresh_weather_api(city_info.first(), city_info.last());
-
     }
 }
 
@@ -932,10 +808,6 @@ void Widget::getReplyFinishedForWeatherKqzl(QNetworkReply *reply)
       ui->dangqian_kongqizhiliang_img_label->setStyleSheet("background-color:#CC0033;");
     }
 
-   // disconnect(manage_weather,SIGNAL(finished(QNetworkReply *)),this,SLOT(getReplyFinished(QNetworkReply*)));
-  //  disconnect(manage_weather, 0, 0, 0);
-
-
 }
 
 void Widget::getReplyFinishedCityInfo(QNetworkReply *reply)
@@ -993,13 +865,11 @@ void Widget::getReplyFinishedTime(QNetworkReply *reply)
 void Widget::on_showSetting_pushButton_clicked()
 {
 
-    ui->save_pushButton->show();
     //ui->showSetting_pushButton->hide();
 
     ui->city_comboBox_p->show();
     ui->city_comboBox_c->show();
     ui->city_comboBox_a->show();
-
 
     ui->lineEdit_City->show();
     ui->lineEdit_City->setPlaceholderText(tr("请输入要查询的城市？"));
@@ -1007,34 +877,7 @@ void Widget::on_showSetting_pushButton_clicked()
 }
 
 
-void Widget::on_save_pushButton_clicked()
-{
 
-   qDebug() << __FILE__ << __LINE__ << "global_city" << global_city;
-   qDebug() << __FILE__ << __LINE__ << "global_city_id" << global_city_id;
-
-   if(global_city.isEmpty())
-   {
-      ui->currCity_label->clear();
-   }
-   else
-   {
-      ui->currCity_label->setText(global_city);
-   }
-
-   if(global_city_id.isEmpty())
-   {
-      ui->currCityID_label->clear();
-   }
-   else
-   {
-      ui->currCityID_label->setText(global_city_id);
-   }
-
-    ui->showSetting_pushButton->show();
-
-
-}
 void Widget::on_reWwather_pushButton_clicked()
 {
     QString city_id = global_city_id;
@@ -1060,13 +903,12 @@ void Widget::on_pushButton_clicked()
     qDebug() << "OpenSSL支持情况:" << QSslSocket::supportsSsl();
 #if 1
     manage_time = new QNetworkAccessManager(this);
-    connect(manage_time, SIGNAL(finished(QNetworkReply *)), this, SLOT(getReplyFinishedTime(QNetworkReply*)));
+    connect(manage_time, SIGNAL(finished(QNetworkReply*)), this, SLOT(getReplyFinishedTime(QNetworkReply*)));
 
     setNetworkRequestTime(network_request_time);
 
     //get
     manage_time->get(network_request_time);
-
 
 #else
 
@@ -1100,18 +942,7 @@ void Widget::receiveDataFromSetting(QStringList data)
     {
         qDebug() << __FILE__ << __LINE__ << "传递过来的数据="<< data.first();
         qDebug() << __FILE__ << __LINE__ << "传递过来的数据="<< data.last();
-        qDebug() << __FILE__ << __LINE__ << "shuaxin....................s";
-        //QWidget::repaint();
-        //QWidget::adjustSize();
-       // QWidget::update();
-       //QWidget::repaint();
-
-        qDebug() << __FILE__ << __LINE__ << "shuaxin....................e";
         firest_refresh_wather();
-//        refresh_weather_api(data.first(), data.last());
-
-//        refresh_weather_kqzl_api(data.first(), data.last());
     }
-
 
 }

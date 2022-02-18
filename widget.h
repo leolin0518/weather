@@ -106,7 +106,6 @@ private slots:
 
     void on_showSetting_pushButton_clicked();//显示cityList
 
-    void on_save_pushButton_clicked();//保存
 
     void on_pushButton_clicked();
 
