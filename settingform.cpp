@@ -68,7 +68,7 @@ void SettingForm::on_chaxun_pushButton_clicked()
     QString cityName = ui->lineEdit_City->text().trimmed();
 
     QString requst_url_str = QString("https://geoapi.qweather.com/v2/city/lookup?location=%1&key=930cc953111c43c6924f88ebda8b00df").arg(cityName);
-    qDebug() << __LINE__ <<  "requst_url_str------------------:"  << requst_url_str;
+    //qDebug() << __LINE__ <<  "requst_url_str------------------:"  << requst_url_str;
 
     request.setUrl(QUrl(QString(requst_url_str)));
 
@@ -92,18 +92,18 @@ void SettingForm::getReplyCityInfo(QNetworkReply *reply)
     {
         QJsonObject tmp = cityinfo.at(i).toObject();
         QString district_cn = tmp.value("name").toString();
-        qDebug() << __LINE__ << "district_cn" << district_cn;
+       // qDebug() << __LINE__ << "district_cn" << district_cn;
         cityList << district_cn;
 
         QString city_id_tmp = tmp.value("id").toString();
-        qDebug() << __LINE__ << "city_id_tmp" << city_id_tmp;
+       // qDebug() << __LINE__ << "city_id_tmp" << city_id_tmp;
         cityList_id << city_id_tmp;
 
 
     }
 
-    qDebug() << __LINE__ << "cityList" << cityList;
-    qDebug() << __LINE__ << "cityList_id" << cityList_id;
+//    qDebug() << __LINE__ << "cityList" << cityList;
+//    qDebug() << __LINE__ << "cityList_id" << cityList_id;
 
     if(cityList.size() > 0)
     {
@@ -150,20 +150,20 @@ void SettingForm::getReplyCityInfo(QNetworkReply *reply)
 //点击下拉框槽函数
 void SettingForm::on_comboBox_01_activated(const QString &arg1)
 {
-    qDebug() << __LINE__ << "arg1" << arg1;
-    qDebug() << __LINE__ << "arg1" << ui->comboBox_01->currentText();
-    qDebug() << __LINE__ << "arg1" << ui->comboBox_01->currentData().toString();
+//    qDebug() << __LINE__ << "arg1" << arg1;
+//    qDebug() << __LINE__ << "arg1" << ui->comboBox_01->currentText();
+//    qDebug() << __LINE__ << "arg1" << ui->comboBox_01->currentData().toString();
     global_city = ui->comboBox_01->currentText();
     global_city_id = ui->comboBox_01->currentData().toString();
-    qDebug() << __FILE__ << __LINE__ << "global_city" << global_city;
-    qDebug() << __FILE__ << __LINE__ << "global_city_id" << global_city_id;
+//    qDebug() << __FILE__ << __LINE__ << "global_city" << global_city;
+//    qDebug() << __FILE__ << __LINE__ << "global_city_id" << global_city_id;
 
 }
 
 void SettingForm::on_lineEdit_City_textChanged(const QString &arg1)
 {
 
-    qDebug() << __FILE__ << __LINE__ << "arg1" << arg1;
+   // qDebug() << __FILE__ << __LINE__ << "arg1" << arg1;
 
     on_chaxun_pushButton_clicked();
 }

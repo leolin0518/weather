@@ -61,8 +61,12 @@ public:
     void ui_init();
 
     void setNetworkRequestWeather(QNetworkRequest &request, QString cityName);//设置网络请求
+    void setNetworkRequestWeatherKongQiZhiliang(QNetworkRequest &request, QString cityNameId);//设置网络请求
+//    void setNetworkRequestCityInfo(QNetworkRequest &request, QString Name);//设置网络请求获取省市区信息
+
     void setNetworkRequestTime(QNetworkRequest &request);//设置，发送post获取网络北京时间
     void setNetworkRequestCityInfo(QString cityName);
+
 
     void getHistoryWeatherInfo(QJsonObject data);                   //获取历史天气信息
     void getTodayWeatherInfo(QJsonObject data);                     //获取当日天气信息
@@ -70,10 +74,22 @@ public:
     void getOtherInfo(QJsonObject data);                            //获取其他天气信息
     void setAqi(QString &strAqi);                                   //设置空气质量指数显示
     void refreshWeather(QString str);
+    void refreshWeatherKongqizhiliang(QString city_id);
+
+//    void refreshCityInfo(QString str);
+
+    void getProvinceList();    //显示省份信息
+    void getCityList(QJsonObject data);
+    void getAreaList(QJsonObject data);
+
+
 
     void setUI_information();   //设置界面显示信息，如当前温度，空气指数等
     void splineChart(QStringList maxList, QStringList minList);//简单的线条曲线图 http://doc.qt.io/qt-5/qtcharts-splinechart-example.html
+
+
     void refresh_weather_api(QString city, QString city_id);
+    void refresh_weather_kqzl_api(QString city, QString city_id);
 
     QStringList read_data_file(QString file_path);
     void firest_refresh_wather();
@@ -82,9 +98,15 @@ public:
 private slots:
     void getReplyFinished(QNetworkReply *reply);
 
+    void getReplyFinishedForWeatherKqzl(QNetworkReply *reply);//处理空气质量的reply
+
     void getReplyFinishedCityInfo(QNetworkReply *reply);
 
     void getReplyFinishedTime(QNetworkReply *reply);
+
+    void on_showSetting_pushButton_clicked();//显示cityList
+
+    void on_save_pushButton_clicked();//保存
 
     void on_pushButton_clicked();
 
@@ -97,6 +119,7 @@ private slots:
 private:
     Ui::Widget *ui;
     QNetworkAccessManager *manage_weather;
+    QNetworkAccessManager *manage_weather_kqzl;
     QNetworkAccessManager *manage_cityInfo;
     QNetworkAccessManager *manage_time;
 
